@@ -20,7 +20,7 @@ function Project({ project, callback }) {
                     <h5 className="card-title text-left">{project.name}</h5>
                         {
                             isDue ?
-                            <p className="text-left text-danger">Due date: {project.dueDate.slice(0,-14)}</p> :
+                            <p className="text-left text-danger">Due date:  {new Date(project.dueDate)}</p> :
                             <p className="text-left">Due date: {project.dueDate.slice(0,-14)}</p>
                         }
                     {
