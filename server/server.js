@@ -13,35 +13,22 @@ require("./routes/myKanban.routes")(app);
 
 const server = app.listen(port, () => console.log(`The server is all fired up on port ${port}`));
 
+
 //To seperate files
 
-const KanbanController = require("./controllers/myKanban.controller");
+const dbReq = require("./controllers/myKanban.controller");
 const io = require("socket.io")(server);
 
 
-const projects = io
-    .of("/api/projects/all")
-    .on("connection", socket => {
-        KanbanController.getAllProjectsSocket(sendToFront)
-
-        function sendToFront(data) {
-            // console.log("sendToFront -> data", data)
-            socket.emit('all projects', {
-                data
-            })
-        }
-    })
 
 io.on("connection", socket => {
-    console.log(socket.id)
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', (data) => {
-        console.log(data);
-    });
-
-    socket.on('disconnect', () => {
-        io.emit('user disconnected');
-    });
+    dbReq.getAllProjectsSocket(data => socket.emit("all projects", { data }))
+   
+    
+    socket.on("update project", (data) => {
+        console.log(data)
+        dbReq.updateExistingProjectStatusSocket(data,data => socket.emit("all projects", { data }))
+    })
 })
 
 // io.emit emits an event to all connected clients
