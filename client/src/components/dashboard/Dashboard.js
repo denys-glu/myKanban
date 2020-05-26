@@ -46,12 +46,7 @@ function Dashboard(props) {
     }
 
     function deleteProject(project) {
-        axios.delete(`http://localhost:8000/api/projects/delete/${project._id}`, { id: project._id })
-            .then(res => {
-                console.log("Successfuly deleted a project: ", res)
-                // getProjects();
-            })
-            .catch(err => console.log("Error while deleting: ", err))
+        socket.emit("delete project", project)
     }
 
     function projectStatusHandler(project, newStatus) {

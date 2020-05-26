@@ -15,7 +15,7 @@ module.exports.getAllProjectsSocket = (callback) => {
 };
 
 module.exports.updateExistingProjectStatusSocket = (req, callback) => {
-    console.log("module.exports.updateExistingProjectStatus -> req.body", req)
+    // console.log("module.exports.updateExistingProjectStatus -> req.body", req)
     Project.findOneAndUpdate({ _id: req._id }, { $set: { status: req.status } }, { new: true, runValidators: true })
         .then(project => Project.find()
             .then(allProjects => {
@@ -23,6 +23,17 @@ module.exports.updateExistingProjectStatusSocket = (req, callback) => {
             })
             .catch(err => callback({ message: "Something went wrong", error: err })))
         .catch(err => callback({ message: "Something went wrong", error: err }));
+};
+
+module.exports.deleteAnExistingProjectSocket = (project, callback) => {
+    // console.log("module.exports.deleteAnExistingProject -> req", req.params)
+    Project.deleteOne({ _id: project._id })
+        .then(result => Project.find()
+            .then(allProjects => {
+                callback(allProjects)
+            })
+            .catch(err => callback({ message: "Something went wrong", error: err })))
+        .catch(err => res.json({ message: "Something went wrong", error: err }));
 };
 
 module.exports.createNewProject = (req, res) => {
@@ -34,7 +45,7 @@ module.exports.createNewProject = (req, res) => {
 };
 
 module.exports.updateExistingProjectStatus = (req, res) => {
-    console.log("module.exports.updateExistingProjectStatus -> req.body", req.body.status)
+    // console.log("module.exports.updateExistingProjectStatus -> req.body", req.body.status)
     Project.findOneAndUpdate({ _id: req.params.id }, { $set: { status: req.body.status } }, { new: true, runValidators: true })
         .then(project => res.json({ project }))
         .catch(err => res.json({ message: "Something went wrong", error: err }));
