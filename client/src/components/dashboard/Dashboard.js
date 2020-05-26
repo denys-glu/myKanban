@@ -13,19 +13,10 @@ function Dashboard(props) {
     const [completed, setCompleted] = useState([]);
 
     useEffect(() => {
-        // getProjects();
-    }, [])
-
-
-    useEffect(() => {
         // we need to set up all of our event listeners
         // in the useEffect callback function
         console.log('Is this running?');
-        socket.on('all projects', data => {
-            socket.emit('my other event', { my: 'data' });
-            console.log(data)
-            // console.log(JSON.parse(data))
-        });
+        socket.on('all projects', saveAndSortProjects);
 
         // note that we're returning a callback function
         // this ensures that the underlying socket will be closed if App is unmounted
@@ -34,30 +25,28 @@ function Dashboard(props) {
 
     }, []);
 
-    function getProjects() {
-        axios.get('http://localhost:8000/api/projects/all')
-            .then(res => {
-                setInProgress(res.data.allProjects
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                    .filter(project => project.status === "In Progress"))
+    function saveAndSortProjects({data}){
+        console.log("saveAndSortProjects -> data", data)
+        setInProgress(data
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .filter(project => project.status === "In Progress"))
 
-                setBacklog(res.data.allProjects
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                    .filter(project => project.status === "Backlog"))
+        setBacklog(data
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .filter(project => project.status === "Backlog"))
 
-                setCompleted(res.data.allProjects
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                    .filter(project => project.status === "Completed"))
+        setCompleted(data
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .filter(project => project.status === "Completed"))
 
-                setProjects(res.data.allProjects)
-            })
+        setProjects(data)
     }
-
+    
     function deleteProject(project) {
         axios.delete(`http://localhost:8000/api/projects/delete/${project._id}`, { id: project._id })
             .then(res => {
                 console.log("Successfuly deleted a project: ", res)
-                getProjects();
+                // getProjects();
             })
             .catch(err => console.log("Error while deleting: ", err))
     }
@@ -81,7 +70,7 @@ function Dashboard(props) {
         axios.put(`http://localhost:8000/api/projects/update/${project._id}`, project)
             .then(res => {
                 console.log("project successfully updated: ", res)
-                getProjects();
+                // getProjects();
             })
             .catch(err => console.log("Error happend while updatin project: ", err))
     }
@@ -89,7 +78,7 @@ function Dashboard(props) {
     return (
         <>
             <div className="container mt-5">
-                <div className="row">
+                 <div className="row">
                     <div className="col-sm-4">
                         <h2 className="text-primary border">Backlog</h2>
                         <div className="projects border">

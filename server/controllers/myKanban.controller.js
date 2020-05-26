@@ -10,7 +10,7 @@ module.exports.getAllProjectsSocket = (callback) => {
     Project.find()
         .then(allProjects => {
         console.log("module.exports.getAllProjectsSocket -> allProjects", allProjects)
-            callback(JSON.stringify(allProjects))
+            callback(allProjects)
         })
         .catch(err => JSON.stringify({ message: "Something went wrong", error: err }));
 };
