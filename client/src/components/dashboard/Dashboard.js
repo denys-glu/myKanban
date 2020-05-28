@@ -51,10 +51,10 @@ function Dashboard(props) {
 
     function projectStatusHandler(project, newStatus) {
 
-        if (project.status === "Completed") {
-            deleteProject(project);
-            return true;
-        }
+        // if (project.status === "Completed") {
+        //     deleteProject(project);
+        //     return true;
+        // }
         switch (project.status) {
             case "Backlog":
                 project.status = "In Progress"

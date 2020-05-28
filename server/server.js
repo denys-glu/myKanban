@@ -13,21 +13,20 @@ require("./routes/myKanban.routes")(app);
 
 const server = app.listen(port, () => console.log(`The server is all fired up on port ${port}`));
 
-
 //To seperate files
 
 const dbReq = require("./controllers/myKanban.controller");
 const io = require("socket.io")(server);
 
 io.on("connection", socket => {
-    dbReq.getAllProjectsSocket(data => socket.emit("all projects", { data }))
+    dbReq.getAllProjectsSocket(data => socket.broadcast.emit("all projects", { data }))
     
     socket.on("update project", data => {
-        dbReq.updateExistingProjectStatusSocket(data,data => socket.emit("all projects", { data }))
+        dbReq.updateExistingProjectStatusSocket(data, data => socket.broadcast.emit("all projects", { data }))
     })
 
     socket.on("delete project", project => {
-        dbReq.deleteAnExistingProjectSocket(project, data => socket.emit("all projects", { data }))
+        dbReq.deleteAnExistingProjectSocket(project, data => socket.broadcast.emit("all projects", { data }))
     })
 
 })
