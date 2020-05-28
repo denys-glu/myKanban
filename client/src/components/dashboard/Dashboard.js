@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Component } from 'react';
 import { Link } from '@reach/router';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import Project from './Project';
 
@@ -9,6 +10,8 @@ function Dashboard(props) {
     const [backlog, setBacklog] = useState([]);
     const [inProgress, setInProgress] = useState([]);
     const [completed, setCompleted] = useState([]);
+    // DnD variables
+    const [state, setState] = useState(projects);
 
 
     useEffect(() => {
@@ -67,34 +70,142 @@ function Dashboard(props) {
             .catch(err => console.log("Error happend while updatin project: ", err))
     }
 
+    // DnD content
+    const reorder = (list, startIndex, endIndex) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+    /**
+ * Moves an item from one list to another list.
+ */
+    const move = (source, destination, droppableSource, droppableDestination) => {
+        // console.log(source);
+        const sourceClone = Array.from(source);
+        const destClone = Array.from(destination);
+        const [removed] = sourceClone.splice(droppableSource.index, 1);
+
+        destClone.splice(droppableDestination.index, 0, removed);
+
+        const result = {};
+        result[droppableSource.droppableId] = sourceClone;
+        // console.log(droppableSource.droppableId)
+        result[droppableDestination.droppableId] = destClone;
+
+        return result;
+    };
+
+
+    const grid = 10;
+
+    const getItemStyle = (isDragging, draggableStyle) => ({
+        // some basic styles to make the items look a bit nicer
+        userSelect: "none",
+        padding: grid * 2,
+        margin: `0 0 ${grid}px 0`,
+
+        // change background colour if dragging
+        background: isDragging ? "lightgreen" : "grey",
+
+        // styles we need to apply on draggables
+        ...draggableStyle
+    });
+
+    const getListStyle = isDraggingOver => ({
+        background: isDraggingOver ? "lightblue" : "lightgrey",
+        padding: grid
+    });
+
+    function onDragEnd(result) {
+        const { source, destination } = result;
+        console.log(source, destination)
+
+        // dropped outside the list
+        if (!destination) {
+            return;
+        }
+        const sInd = +source.droppableId;
+        const dInd = +destination.droppableId;
+
+        if (sInd === dInd) {
+            const items = reorder(projects[sInd], source.index, destination.index);
+            const newState = [...projects];
+            newState[sInd] = items;
+            setProjects(newState);
+        } else {
+            // console.log({projectssInd: projects[sInd],projectsdInd: projects[dInd], source, destination})
+            const result = move(projects[sInd], projects[dInd], source, destination);
+            const newState = [...projects];
+            newState[sInd] = result[sInd];
+            newState[dInd] = result[dInd];
+
+            setProjects(newState.filter(group => group.length));
+        }
+    }
+
     return (
         <>
             <div className="container mt-5">
                 <div className="row">
-                    <div className="col-sm-4">
-                        <h2 className="text-primary border">Backlog</h2>
-                        <div className="projects border">
-                            {
-                                backlog.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
-                            }
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId= "0">
+                            {(provided, snapshot) => (
+                                <div className="col-sm-4"
+                                    ref={provided.innerRef}
+                                    style={getListStyle(snapshot.isDraggingOver)}
+                                    {...provided.droppableProps}
+                                >
+                                    {/* <div className="col-sm-4"> */}
+                                        <h2 className="text-primary border">Backlog</h2>
+                                        <div className="projects border">
+                                            {
+                                                projects.map((project, i) => (
+                                                    <Draggable
+                                                        key={i}
+                                                        draggableId={project._id}
+                                                        index={i}
+                                                    >
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
+                                                                )}
+                                                            >
+                                                                {project.name}
+                                                                {/* <Project project={project} callback={projectStatusHandler} /> */}
+                                                            </div>)}
+                                                    </Draggable>
+                                                ))
+                                            }
+                                        </div>
+                                        {provided.placeholder}
+                                    </div>
+                                // </div>
+                            )}
+                        </Droppable>
+                        <div className="col-sm-4">
+                            <h2 className="text-warning border">In Progress</h2>
+                            <div className="projects border">
+                                {
+                                    inProgress.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-sm-4">
-                        <h2 className="text-warning border">In Progress</h2>
-                        <div className="projects border">
-                            {
-                                inProgress.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
-                            }
+                        <div className="col-sm-4">
+                            <h2 className="text-success border">Completed</h2>
+                            <div className="projects border">
+                                {
+                                    completed.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-sm-4">
-                        <h2 className="text-success border">Completed</h2>
-                        <div className="projects border">
-                            {
-                                completed.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
-                            }
-                        </div>
-                    </div>
+                    </DragDropContext>
                 </div>
                 <div className="row">
                     <div className="col text-left p-3">
