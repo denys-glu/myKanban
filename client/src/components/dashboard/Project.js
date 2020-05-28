@@ -20,11 +20,11 @@ function Project({ project, callback }) {
                     <h5 className="card-title text-left">{project.name}</h5>
                         {
                             isDue ?
-                            <p className="text-left text-danger">Due date:  {new Date(project.dueDate)}</p> :
-                            <p className="text-left">Due date: {new Date(project.dueDate)}</p>
+                            <p className="text-left text-danger">Due date: {project.dueDate}</p> :
+                            <p className="text-left">Due date: {project.dueDate}</p>
                         }
                     {
-                       (project.status === "Completed") ?
+                        (project.status === "Completed") ?
                             <button onClick={ () => callback(project)} className={"btn btn-block btn-" + status}>Remove Project</button>
                         :
                             <button onClick={ () => callback(project)} className={"btn btn-block btn-" + status}>{project.status} <strong>></strong></button>

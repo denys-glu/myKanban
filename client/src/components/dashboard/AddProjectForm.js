@@ -19,14 +19,14 @@ function AddProjectForm() {
 
     function dueDateHandler({ name, value }) {
         setDueDate(value)
-        if(value !== "") {
+        if(value != "") {
             setDueDateError("");
         }
     }
 
     function submitHandler(e) {
         e.preventDefault();
-        axios.post('http://localhost:8000/api/projects/new', {name, dueDate})
+        axios.post('http://localhost:8001/api/projects/new', {name, dueDate})
         .then(res => {
             navigate("/");
         })
