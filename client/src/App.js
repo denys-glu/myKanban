@@ -11,7 +11,7 @@ function App() {
 
             <div className="container mt-4">
                 <div className="row">
-                    <div className="col">
+                    <div className="col title-head">
                         <h1>Project Manager</h1>
                     </div>
                 </div>
