@@ -129,13 +129,27 @@ function Dashboard(props) {
         if (!destination) {
             return;
         }
-        const items = reorder(
-            [...projects],
-            result.source.index,
-            result.destination.index
-        );
 
-        setProjects(items);
+        const sInd = +source.droppableId;
+        const dInd = +destination.droppableId;
+        // TODO: fix else statement
+        if (sInd === dInd) {
+            const items = reorder(
+                [...projects],
+                result.source.index,
+                result.destination.index
+            );
+
+            setProjects(items);
+        } else {
+            const result = move(state[sInd], state[dInd], source, destination);
+            const newState = [...state];
+            newState[sInd] = result[sInd];
+            newState[dInd] = result[dInd];
+
+            setState(newState.filter(group => group.length));
+        }
+
     }
 
     return (
