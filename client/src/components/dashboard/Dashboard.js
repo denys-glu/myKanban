@@ -21,6 +21,7 @@ function Dashboard(props) {
     function getProjects() {
         axios.get('http://localhost:8001/api/projects/all')
             .then(res => {
+                
                 setInProgress(res.data.allProjects
                     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
                     .filter(project => project.status === "In Progress"))
@@ -33,8 +34,9 @@ function Dashboard(props) {
                     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
                     .filter(project => project.status === "Completed"))
 
-                setProjects(res.data.allProjects)
-            })
+                setProjects(res.data.allProjects.map((project, index) => ({ ...project, id: index+"" })))
+            }
+        )
     }
 
     function deleteProject(project) {
@@ -71,16 +73,9 @@ function Dashboard(props) {
     }
 
     // DnD content
-    const reorder = (list, startIndex, endIndex) => {
-        const result = Array.from(list);
-        const [removed] = result.splice(startIndex, 1);
-        result.splice(endIndex, 0, removed);
-
-        return result;
-    };
     /**
- * Moves an item from one list to another list.
- */
+     * Moves an item from one list to another list.
+     */
     const move = (source, destination, droppableSource, droppableDestination) => {
         // console.log(source);
         const sourceClone = Array.from(source);
@@ -118,6 +113,14 @@ function Dashboard(props) {
         padding: grid
     });
 
+    const reorder = (list, startIndex, endIndex) => {
+        const result = [...list];
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+
     function onDragEnd(result) {
         const { source, destination } = result;
         console.log(source, destination)
@@ -126,23 +129,13 @@ function Dashboard(props) {
         if (!destination) {
             return;
         }
-        const sInd = +source.droppableId;
-        const dInd = +destination.droppableId;
+        const items = reorder(
+            [...projects],
+            result.source.index,
+            result.destination.index
+        );
 
-        if (sInd === dInd) {
-            const items = reorder(projects[sInd], source.index, destination.index);
-            const newState = [...projects];
-            newState[sInd] = items;
-            setProjects(newState);
-        } else {
-            // console.log({projectssInd: projects[sInd],projectsdInd: projects[dInd], source, destination})
-            const result = move(projects[sInd], projects[dInd], source, destination);
-            const newState = [...projects];
-            newState[sInd] = result[sInd];
-            newState[dInd] = result[dInd];
-
-            setProjects(newState.filter(group => group.length));
-        }
+        setProjects(items);
     }
 
     return (
@@ -152,7 +145,7 @@ function Dashboard(props) {
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Droppable droppableId= "0">
                             {(provided, snapshot) => (
-                                <div className="col-sm-4"
+                                <div className="col-sm-6"
                                     ref={provided.innerRef}
                                     style={getListStyle(snapshot.isDraggingOver)}
                                     {...provided.droppableProps}
@@ -163,8 +156,8 @@ function Dashboard(props) {
                                             {
                                                 projects.map((project, i) => (
                                                     <Draggable
-                                                        key={i}
-                                                        draggableId={project._id}
+                                                        key={project.id}
+                                                        draggableId={project.id}
                                                         index={i}
                                                     >
                                                         {(provided, snapshot) => (
@@ -177,9 +170,10 @@ function Dashboard(props) {
                                                                     provided.draggableProps.style
                                                                 )}
                                                             >
-                                                                {project.name}
-                                                                {/* <Project project={project} callback={projectStatusHandler} /> */}
-                                                            </div>)}
+                                                                <Project project={project} callback={projectStatusHandler} />
+                                                            {provided.placeholder}
+                                                            </div>
+                                                            )}
                                                     </Draggable>
                                                 ))
                                             }
@@ -189,7 +183,7 @@ function Dashboard(props) {
                                 // </div>
                             )}
                         </Droppable>
-                        <div className="col-sm-4">
+                        {/* <div className="col-sm-4">
                             <h2 className="text-warning border">In Progress</h2>
                             <div className="projects border">
                                 {
@@ -204,7 +198,7 @@ function Dashboard(props) {
                                     completed.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
                                 }
                             </div>
-                        </div>
+                        </div> */}
                     </DragDropContext>
                 </div>
                 <div className="row">

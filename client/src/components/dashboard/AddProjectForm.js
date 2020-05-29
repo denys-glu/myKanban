@@ -10,7 +10,7 @@ function AddProjectForm() {
 
     function nameHandler({ name, value }) {
         setName(value)
-        if(value.length < 3) {
+        if (value.length < 3) {
             setNameErr("Name should be at least 3 characters long");
         } else {
             setNameErr("");
@@ -19,32 +19,32 @@ function AddProjectForm() {
 
     function dueDateHandler({ name, value }) {
         setDueDate(value)
-        if(value != "") {
+        if (value !== "") {
             setDueDateError("");
         }
     }
 
     function submitHandler(e) {
         e.preventDefault();
-        axios.post('http://localhost:8001/api/projects/new', {name, dueDate})
-        .then(res => {
-            navigate("/");
-        })
-        .catch(err => {
-            console.log("Error happend :(", err);
-            if (err.response.data.error.name === "MongoError") {
-                setNameErr(`Project name must be unique, "${err.response.data.error.keyValue.name}" has already been taken!`);
-            } else {
-                const errorResponse = err.response.data.error.errors; // Get the errors from err.response.data
-                for (const key of Object.keys(errorResponse)) { // Loop through all errors and get the messages
-                    if(key === "name") {
-                        setNameErr(errorResponse[key].message);
-                    } else {
-                        setDueDateError(errorResponse[key].message);
+        axios.post('http://localhost:8000/api/projects/new', { name, dueDate })
+            .then(res => {
+                navigate("/");
+            })
+            .catch(err => {
+                console.log("Error happend :(", err);
+                if (err.response.data.error.name === "MongoError") {
+                    setNameErr(`Project name must be unique, "${err.response.data.error.keyValue.name}" has already been taken!`);
+                } else {
+                    const errorResponse = err.response.data.error.errors; // Get the errors from err.response.data
+                    for (const key of Object.keys(errorResponse)) { // Loop through all errors and get the messages
+                        if (key === "name") {
+                            setNameErr(errorResponse[key].message);
+                        } else {
+                            setDueDateError(errorResponse[key].message);
+                        }
                     }
                 }
-            }
-        })
+            })
     }
     return (
         <>
