@@ -26,7 +26,7 @@ function AddProjectForm() {
 
     function submitHandler(e) {
         e.preventDefault();
-        axios.post('http://localhost:8000/api/projects/new', { name, dueDate })
+        axios.post('http://localhost:8001/api/projects/new', { name, dueDate })
             .then(res => {
                 navigate("/");
             })
@@ -51,23 +51,23 @@ function AddProjectForm() {
             <div className="container mt-3">
                 <div className="row">
                     <div className="col text-right">
-                        <Link to="/">Back To Dashboard</Link>
+                        <Link to="/" className="fs36 text-dark">Back To Dashboard</Link>
                     </div>
                 </div>
-                <div className="row d-flex justify-content-center">
-                    <div className="col-6">
+                <div className="row d-flex transparent-background justify-content-center">
+                    <div className="col-6 fs32">
                         <form onSubmit={submitHandler}>
                             <div className="form-group">
-                                {nameErr && <p className="text-danger" >{nameErr}</p>}
-                                <label htmlFor="">Project Name: </label>
-                                <input type="text" className="form-control" value={name} onChange={e => nameHandler(e.target)} />
+                                {nameErr && <p className="text-danger fs32" >{nameErr}</p>}
+                                <label htmlFor="" className="form-heading fs40">Project Name: </label>
+                                <input type="text" className="form-control fs32" value={name} onChange={e => nameHandler(e.target)} />
                             </div>
                             <div className="form-group">
                                 {dueDateError && <p className="text-danger" >{dueDateError}</p>}
-                                <label htmlFor="">Due Date: </label>
-                                <input type="date" className="form-control" value={dueDate} onChange={e => dueDateHandler(e.target)} />
+                                <label htmlFor="" className="form-heading fs40">Due Date: </label>
+                                <input type="date" className="form-control fs32" value={dueDate} onChange={e => dueDateHandler(e.target)} />
                             </div>
-                            <button className="btn btn-success btn-block" type="submit">Add Project</button>
+                            <button className="btn  fs32 btn-success" type="submit">Add Project</button>
                         </form>
                     </div>
                 </div>

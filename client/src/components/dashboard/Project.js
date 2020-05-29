@@ -15,9 +15,9 @@ function Project({ project, callback }) {
     }
     return (
         <>
-            <div className="card m-2" >
+            <div className="card item m-2" >
                 <div className="card-body">
-                    <h5 className="card-title text-left">{project.name}</h5>
+                    <p className="card-title fs32">{project.name}</p>
                         {
                             isDue ?
                             <p className="text-left text-danger">Due date: {project.dueDate.slice(0, -14)}</p> :
@@ -25,9 +25,9 @@ function Project({ project, callback }) {
                         }
                     {
                         (project.status === "Completed") ?
-                            <button onClick={ () => callback(project)} className={"btn btn-block btn-" + status}>Remove Project</button>
+                            <button onClick={ () => callback(project)} className={"btn fs28 btn-" + status}>Remove Project</button>
                         :
-                            <button onClick={ () => callback(project)} className={"btn btn-block btn-" + status}>{project.status} <strong>></strong></button>
+                            <button onClick={ () => callback(project)} className={"btn fs32 btn-" + status}>{project.status} <strong>></strong></button>
                     }
                 </div>
             </div>

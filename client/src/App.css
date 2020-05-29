@@ -1,5 +1,10 @@
+body{
+  background-image: url("./images/corkBoardCropped.png");
+}
+
 .App {
   text-align: center;
+  font-family: 'Indie Flower', cursive;
 }
 
 .App-logo {
@@ -41,16 +46,13 @@
 /* plus sign */
 
 .plus {
-  display:inline-block;
-  width:16px;
-  height:16px;
-  background:
-    linear-gradient(#007bff,#007bff),
-    linear-gradient(#007bff,#007bff),
-    #000;
-  background-position:center;
-  background-size: 50% 2px,2px 50%; /*thickness = 2px, length = 50% (25px)*/
-  background-repeat:no-repeat;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(#28a745,#28a745), linear-gradient(#28a745,#28a745), #000;
+  background-position: center;
+  background-size: 50% 2px,2px 50%;
+  background-repeat: no-repeat;
   vertical-align: middle;
 }
 
@@ -58,10 +60,76 @@
   border-radius:50%;
 }
 
+.title-head h1{
+  color: rgb(7, 103, 133);
+  font-weight: bold;
+  font-size: 60px;
+}
+
 /* Projects */
 
 .projects {
-    max-height: 500px;
+    max-height: 500px; 
     min-height: 500px;
     overflow-y: scroll;
+}
+.transparent-background{
+  background-color: rgba(255, 255, 255, 0.308);
+  border-radius: 30px;
+}
+.item {
+    background-size: 330px 250px;
+    background-repeat: no-repeat;
+    background-color: transparent !important;
+    max-width: 100%;
+    min-height: 250px;
+    font-weight: bold;
+    font-size: 25px;
+    padding-top: 18px;
+    border: none;
+}
+.backlog .item{
+  background-image: url("./images/yellowNote.png");
+}
+.backlog-heading, 
+.in-progress-heading, 
+.completed-heading,
+.form-heading{
+  color: rgb(7, 103, 133);
+}
+
+.in-progress .item{
+  background-image: url('./images/bueNote.png')
+}
+.completed .item{
+  background-image: url('./images/greenNote.png');
+}
+.fs28{
+  font-size:28px;
+}
+.fs32{
+  font-size: 32px;
+}
+.fs36{
+  font-size: 36px;
+}
+.fs40{
+  font-size: 40px;
+  font-weight: bold;
+}
+
+
+/* Scroll bar */
+
+.projects::-webkit-scrollbar {
+  width: 10px;              /*width of the entire scroll bar*/
+  border-radius: 20px;
+}
+.projects::-webkit-scrollbar-track {
+  background: rgba(7, 103, 133  , 0.377);        /* color of the tracking area */
+}
+.projects::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.39);    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid rgba(7, 103, 133, 0.733);  /* creates padding around scroll thumb */
 }

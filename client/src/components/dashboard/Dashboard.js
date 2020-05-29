@@ -22,15 +22,18 @@ function Dashboard(props) {
         axios.get('http://localhost:8001/api/projects/all')
             .then(res => {
                 
-                setInProgress(res.data.allProjects
+                let allProjects = res.data.allProjects.map((project, index) => ({ ...project, id: index + "" }))
+
+                setInProgress(allProjects
                     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
                     .filter(project => project.status === "In Progress"))
 
-                setBacklog(res.data.allProjects
+
+                setBacklog(allProjects
                     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
                     .filter(project => project.status === "Backlog"))
 
-                setCompleted(res.data.allProjects
+                setCompleted(allProjects
                     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
                     .filter(project => project.status === "Completed"))
 
@@ -73,6 +76,37 @@ function Dashboard(props) {
     }
 
     // DnD content
+
+
+
+    const grid = 10;
+
+    const getItemStyle = (isDragging, draggableStyle) => ({
+        // some basic styles to make the items look a bit nicer
+        userSelect: "none",
+        // padding: grid * 2,
+        // margin: `0 0 ${grid}px 0`,
+
+        // change background colour if dragging
+        // background: isDragging ? "lightgreen" : "grey",
+
+        // styles we need to apply on draggables
+        ...draggableStyle
+    });
+
+    const getListStyle = isDraggingOver => ({
+        // background: isDraggingOver ? "lightblue" : "lightgrey",
+        padding: grid
+    });
+
+    const reorder = (list, startIndex, endIndex) => {
+        const result = [...list];
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+
     /**
      * Moves an item from one list to another list.
      */
@@ -92,42 +126,25 @@ function Dashboard(props) {
         return result;
     };
 
-
-    const grid = 10;
-
-    const getItemStyle = (isDragging, draggableStyle) => ({
-        // some basic styles to make the items look a bit nicer
-        userSelect: "none",
-        padding: grid * 2,
-        margin: `0 0 ${grid}px 0`,
-
-        // change background colour if dragging
-        background: isDragging ? "lightgreen" : "grey",
-
-        // styles we need to apply on draggables
-        ...draggableStyle
-    });
-
-    const getListStyle = isDraggingOver => ({
-        background: isDraggingOver ? "lightblue" : "lightgrey",
-        padding: grid
-    });
-
-    const reorder = (list, startIndex, endIndex) => {
-        const result = [...list];
-        const [removed] = result.splice(startIndex, 1);
-        result.splice(endIndex, 0, removed);
-
-        return result;
-    };
-
     function onDragEnd(result) {
         const { source, destination } = result;
+        let localState, setLocalState;
+        
         console.log(source, destination)
 
         // dropped outside the list
         if (!destination) {
             return;
+        }
+        if (source.droppableId === "0") {
+            localState = backlog;
+            setLocalState = setBacklog;
+        } else if (source.droppableId === "1") {
+            localState = inProgress;
+            setLocalState = setInProgress;
+        } else {
+            localState = completed;
+            setLocalState = setCompleted;
         }
 
         const sInd = +source.droppableId;
@@ -135,19 +152,20 @@ function Dashboard(props) {
         // TODO: fix else statement
         if (sInd === dInd) {
             const items = reorder(
-                [...projects],
+                [...localState],
                 result.source.index,
                 result.destination.index
             );
 
-            setProjects(items);
+            
+            setLocalState(items);
         } else {
-            const result = move(state[sInd], state[dInd], source, destination);
-            const newState = [...state];
+            const result = move(projects[sInd], projects[dInd], source, destination);
+            const newState = [...projects];
             newState[sInd] = result[sInd];
             newState[dInd] = result[dInd];
 
-            setState(newState.filter(group => group.length));
+            setProjects(newState.filter(group => group.length));
         }
 
     }
@@ -159,16 +177,17 @@ function Dashboard(props) {
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Droppable droppableId= "0">
                             {(provided, snapshot) => (
-                                <div className="col-sm-6"
+                                <div className="col-4"
                                     ref={provided.innerRef}
                                     style={getListStyle(snapshot.isDraggingOver)}
                                     {...provided.droppableProps}
                                 >
-                                    {/* <div className="col-sm-4"> */}
-                                        <h2 className="text-primary border">Backlog</h2>
-                                        <div className="projects border">
+                                    <div className="transparent-background pt-3">
+                                        <h2 className="backlog-heading fs40">Backlog</h2>
+                                        <div className="projects backlog">
                                             {
-                                                projects.map((project, i) => (
+                                                backlog
+                                                .map((project, i) => (
                                                     <Draggable
                                                         key={project.id}
                                                         draggableId={project.id}
@@ -194,30 +213,96 @@ function Dashboard(props) {
                                         </div>
                                         {provided.placeholder}
                                     </div>
-                                // </div>
+                                </div>
                             )}
                         </Droppable>
-                        {/* <div className="col-sm-4">
-                            <h2 className="text-warning border">In Progress</h2>
-                            <div className="projects border">
-                                {
-                                    inProgress.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
-                                }
-                            </div>
-                        </div>
-                        <div className="col-sm-4">
-                            <h2 className="text-success border">Completed</h2>
-                            <div className="projects border">
-                                {
-                                    completed.map((project, i) => <Project key={i} project={project} callback={projectStatusHandler} />)
-                                }
-                            </div>
-                        </div> */}
+                        <Droppable droppableId= "1">
+                            {(provided, snapshot) => (
+                                <div className="col-4 "
+                                    ref={provided.innerRef}
+                                    style={getListStyle(snapshot.isDraggingOver)}
+                                    {...provided.droppableProps}
+                                >
+                                    <div className="transparent-background pt-3">
+                                        <h2 className="in-progress-heading fs40">In Progress</h2>
+                                        <div className="projects in-progress">
+                                            {
+                                                inProgress
+                                                .map((project, i) => (
+                                                    <Draggable
+                                                        key={project.id}
+                                                        draggableId={project.id}
+                                                        index={i}
+                                                    >
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
+                                                                )}
+                                                            >
+                                                                <Project project={project} callback={projectStatusHandler} />
+                                                            {provided.placeholder}
+                                                            </div>
+                                                            )}
+                                                    </Draggable>
+                                                ))
+                                            }
+                                        </div>
+                                        {provided.placeholder}
+                                    </div>
+                                </div>
+                            )}
+                        </Droppable>
+                        <Droppable droppableId= "2">
+                            {(provided, snapshot) => (
+                                <div className="col-4 "
+                                    ref={provided.innerRef}
+                                    style={getListStyle(snapshot.isDraggingOver)}
+                                    {...provided.droppableProps}
+                                >
+                                    <div className="transparent-background pt-3">
+                                        <h2 className="completed-heading fs40">Completed</h2>
+                                        <div className="projects completed">
+                                            {
+                                                completed
+                                                .map((project, i) => (
+                                                    <Draggable
+                                                        key={project.id}
+                                                        draggableId={project.id}
+                                                        index={i}
+                                                    >
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
+                                                                )}
+                                                            >
+                                                                <Project project={project} callback={projectStatusHandler} />
+                                                            {provided.placeholder}
+                                                            </div>
+                                                            )}
+                                                    </Draggable>
+                                                ))
+                                            }
+                                        </div>
+                                        {provided.placeholder}
+                                    </div>
+                                </div>
+                            )}
+                        </Droppable>
                     </DragDropContext>
                 </div>
                 <div className="row">
                     <div className="col text-left p-3">
-                        <Link className="btn btn-primary" to="projects/new">
+                        <Link className="btn  fs32 btn-success" to="projects/new">
                             <div className="plus radius mr-2"></div>
                             Add New Project
                         </Link>
