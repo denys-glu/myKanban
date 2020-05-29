@@ -3,6 +3,7 @@ import { Link } from '@reach/router';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import Project from './Project';
+import io from 'socket.io-client';
 
 function Dashboard(props) {
     const [projects, setProjects] = useState([])
@@ -10,52 +11,59 @@ function Dashboard(props) {
     const [backlog, setBacklog] = useState([]);
     const [inProgress, setInProgress] = useState([]);
     const [completed, setCompleted] = useState([]);
+    const [socket] = useState(() => io(':8000'));
     // DnD variables
     const [state, setState] = useState(projects);
 
 
     useEffect(() => {
-        getProjects();
+        // we need to set up all of our event listeners
+        // in the useEffect callback function
+        console.log('Is this running?');
+        socket.on('all projects', saveAndSortProjects);
+
+        socket.on('update project response', (res) => {
+            console.log("update received", res)
+        });
+        // note that we're returning a callback function
+        // this ensures that the underlying socket will be closed if App is unmounted
+        // this would be more critical if we were creating the socket in a subcomponent
+        return () => socket.disconnect(true);
+        // getProjects();
     }, [])
 
-    function getProjects() {
-        axios.get('http://localhost:8001/api/projects/all')
-            .then(res => {
-                
-                let allProjects = res.data.allProjects.map((project, index) => ({ ...project, id: index + "" }))
 
-                setInProgress(allProjects
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                    .filter(project => project.status === "In Progress"))
+    function saveAndSortProjects({ data }) {
+        console.log("saveAndSortProjects -> data", data)
+        let allProjects = data.map((project, index) => ({ ...project, id: index + "" }))
 
+        setInProgress(allProjects
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .filter(project => project.status === "In Progress"))
 
-                setBacklog(allProjects
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                    .filter(project => project.status === "Backlog"))
+        setBacklog(allProjects
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .filter(project => project.status === "Backlog"))
 
-                setCompleted(allProjects
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-                    .filter(project => project.status === "Completed"))
+        setCompleted(allProjects
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+            .filter(project => project.status === "Completed"))
 
-                setProjects(res.data.allProjects.map((project, index) => ({ ...project, id: index+"" })))
-            }
-        )
+        setProjects(allProjects.map((project, index) => ({ ...project, id: index + "" })))
     }
+
+
 
     function deleteProject(project) {
-        axios.delete(`http://localhost:8001/api/projects/delete/${project._id}`, { id: project._id })
-            .then(res => {
-                console.log("Successfuly deleted a project: ", res)
-                getProjects();
-            })
-            .catch(err => console.log("Error while deleting: ", err))
+        socket.emit("delete project", project)
     }
 
-    function projectStatusHandler(project) {
-        if (project.status === "Completed") {
-            deleteProject(project);
-            return true;
-        }
+    function projectStatusHandler(project, newStatus) {
+
+        // if (project.status === "Completed") {
+        //     deleteProject(project);
+        //     return true;
+        // }
         switch (project.status) {
             case "Backlog":
                 project.status = "In Progress"
@@ -63,16 +71,13 @@ function Dashboard(props) {
             case "In Progress":
                 project.status = "Completed"
                 break;
+            case "Completed":
+                project.status = "Backlog"
+                break;
             default:
                 console.log("some unknown status received")
         }
-
-        axios.put(`http://localhost:8001/api/projects/update/${project._id}`, project)
-            .then(res => {
-                console.log("project successfully updated: ", res)
-                getProjects();
-            })
-            .catch(err => console.log("Error happend while updatin project: ", err))
+        socket.emit('update project', project);
     }
 
     // DnD content
