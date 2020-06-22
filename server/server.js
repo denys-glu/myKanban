@@ -12,28 +12,3 @@ app.use(express.json(), cors(), express.urlencoded({ extended: true }));
 require("./routes/myKanban.routes")(app);
 
 const server = app.listen(port, () => console.log(`The server is all fired up on port ${port}`));
-
-//To seperate files
-
-const dbReq = require("./controllers/myKanban.controller");
-const io = require("socket.io")(server);
-
-io.on("connection", socket => {
-    dbReq.getAllProjectsSocket(data => socket.broadcast.emit("all projects", { data }))
-
-    socket.on("update project", data => {
-        dbReq.updateExistingProjectStatusSocket(data, data => {
-            socket.emit("all projects", { data })
-            socket.broadcast.emit("all projects", { data })
-        })
-    })
-
-    socket.on("delete project", project => {
-        dbReq.deleteAnExistingProjectSocket(project, data => socket.broadcast.emit("all projects", { data }))
-    })
-
-})
-
-// io.emit emits an event to all connected clients
-// socket.broadcast.emit emits an event to all clients other than this particular one, referenced by the socket variable
-// socket.emit emits an event directly to this specific client

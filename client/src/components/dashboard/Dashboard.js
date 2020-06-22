@@ -1,39 +1,30 @@
-import React, { useEffect, useState, Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from '@reach/router';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import Project from './Project';
-import io from 'socket.io-client';
 
-function Dashboard(props) {
+function Dashboard() {
     const [projects, setProjects] = useState([])
 
     const [backlog, setBacklog] = useState([]);
     const [inProgress, setInProgress] = useState([]);
     const [completed, setCompleted] = useState([]);
-    const [socket] = useState(() => io(':8000'));
+
     // DnD variables
     const [state, setState] = useState(projects);
-
+    const API_URL = `http://localhost:8000/api/projects/`;
 
     useEffect(() => {
-        // we need to set up all of our event listeners
-        // in the useEffect callback function
-        console.log('Is this running?');
-        socket.on('all projects', saveAndSortProjects);
-
-        socket.on('update project response', (res) => {
-            console.log("update received", res)
-        });
-        // note that we're returning a callback function
-        // this ensures that the underlying socket will be closed if App is unmounted
-        // this would be more critical if we were creating the socket in a subcomponent
-        return () => socket.disconnect(true);
-        // getProjects();
+        getProjects();
     }, [])
 
+    function getProjects() {
+        axios.get(API_URL + "all")
+            .then(res => saveAndSortProjects(res.data))
+    }
 
-    function saveAndSortProjects({ data }) {
+    function saveAndSortProjects(data) {
         console.log("saveAndSortProjects -> data", data)
         let allProjects = data.map((project, index) => ({ ...project, id: index + "" }))
 
@@ -52,18 +43,21 @@ function Dashboard(props) {
         setProjects(allProjects.map((project, index) => ({ ...project, id: index + "" })))
     }
 
-
-
     function deleteProject(project) {
-        socket.emit("delete project", project)
+        axios.delete(`${API_URL}delete/${project._id}`, { id: project._id })
+            .then(res => {
+                console.log("Successfuly deleted a project: ", res)
+                getProjects();
+            })
+            .catch(err => console.log("Error while deleting: ", err))
     }
 
     function projectStatusHandler(project, newStatus) {
 
-        // if (project.status === "Completed") {
-        //     deleteProject(project);
-        //     return true;
-        // }
+        if (project.status === "Completed") {
+            deleteProject(project);
+            return true;
+        }
         switch (project.status) {
             case "Backlog":
                 project.status = "In Progress"
@@ -77,12 +71,15 @@ function Dashboard(props) {
             default:
                 console.log("some unknown status received")
         }
-        socket.emit('update project', project);
+        axios.put(`${API_URL}update/${project._id}`, project)
+            .then(res => {
+                console.log("project successfully updated: ", res)
+                getProjects();
+            })
+            .catch(err => console.log("Error happend while updatin project: ", err))
     }
 
     // DnD content
-
-
 
     const grid = 10;
 
