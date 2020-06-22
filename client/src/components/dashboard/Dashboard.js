@@ -26,21 +26,19 @@ function Dashboard() {
 
     function saveAndSortProjects(data) {
         console.log("saveAndSortProjects -> data", data)
-        let allProjects = data.map((project, index) => ({ ...project, id: index + "" }))
-
-        setInProgress(allProjects
+        setInProgress(data
             .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .filter(project => project.status === "In Progress"))
 
-        setBacklog(allProjects
+        setBacklog(data
             .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .filter(project => project.status === "Backlog"))
 
-        setCompleted(allProjects
+        setCompleted(data
             .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .filter(project => project.status === "Completed"))
 
-        setProjects(allProjects.map((project, index) => ({ ...project, id: index + "" })))
+        setProjects(data)
     }
 
     function deleteProject(project) {
@@ -191,8 +189,8 @@ function Dashboard() {
                                                 backlog
                                                 .map((project, i) => (
                                                     <Draggable
-                                                        key={project.id}
-                                                        draggableId={project.id}
+                                                        key={project.id+""}
+                                                        draggableId={project.id+""}
                                                         index={i}
                                                     >
                                                         {(provided, snapshot) => (
@@ -232,8 +230,8 @@ function Dashboard() {
                                                 inProgress
                                                 .map((project, i) => (
                                                     <Draggable
-                                                        key={project.id}
-                                                        draggableId={project.id}
+                                                        key={project.id + ""}
+                                                        draggableId={project.id + ""}
                                                         index={i}
                                                     >
                                                         {(provided, snapshot) => (
@@ -273,8 +271,8 @@ function Dashboard() {
                                                 completed
                                                 .map((project, i) => (
                                                     <Draggable
-                                                        key={project.id}
-                                                        draggableId={project.id}
+                                                        key={project.id + ""}
+                                                        draggableId={project.id + ""}
                                                         index={i}
                                                     >
                                                         {(provided, snapshot) => (

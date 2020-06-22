@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 
@@ -16,6 +17,7 @@ const ProjectSchema = new Schema({
     }
 }, { timestamps: true });
 
+ProjectSchema.plugin(AutoIncrement, {inc_field: "id"})
 const Project = mongoose.model("ProjectSchema", ProjectSchema);
 
 module.exports = Project;
