@@ -11,6 +11,7 @@ const ProjectSchema = new Schema({
         unique: true
     },
     status: { type: String, default: "0" },
+    sortId: { type: Number, default: 0 },
     dueDate: {
         type: Date,
         required: [true, "Due date is required"]
