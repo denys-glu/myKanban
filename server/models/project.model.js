@@ -10,7 +10,7 @@ const ProjectSchema = new Schema({
         minlength: [3, "Name should be longer than 3 characters!"],
         unique: true
     },
-    status: { type: String, default: 0 },
+    status: { type: String, default: "0" },
     dueDate: {
         type: Date,
         required: [true, "Due date is required"]
