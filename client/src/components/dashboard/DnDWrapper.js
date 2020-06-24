@@ -7,18 +7,36 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
     const [backlog, setBacklog] = useState([]);
     const [inProgress, setInProgress] = useState([]);
     const [completed, setCompleted] = useState([]);
+
+    const statuses = [
+        {
+            code: "0",
+            name: "Backlog",
+            alias: "backlog"
+
+        },
+        {
+            code: "1",
+            name: "In Progress",
+            alias: "inProgress"
+        },
+        {
+            code: "2",
+            name: "Completed",
+            alias: "completed"
+        }
+    ]
+
     function saveAndSortProjects(data) {
         console.log("saveAndSortProjects -> data", data)
+        data = data.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
         setBacklog(data
-            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .filter(project => project.status === "0"))
-
+            
         setInProgress(data
-            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .filter(project => project.status === "1"))
 
         setCompleted(data
-            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
             .filter(project => project.status === "2"))
     }
 
@@ -28,7 +46,7 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
 
     // DnD variables
     const [state, setState] = useState(projects);
-    
+
 
     // DnD content
 
@@ -63,37 +81,33 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
     /**
      * Moves an item from one list to another list.
      */
-    const move = (item, destination, droppableSource, droppableDestination) => {
-        console.log("move -> droppableDestination", droppableDestination)
-        console.log("move -> droppableSource", droppableSource)
-        console.log("move -> destination", destination)
-        console.log("move -> item", item)
+    const move = (source, destination, droppableSource, droppableDestination) => {
+        const sourceClone = Array.from(source);
+        const destClone = Array.from(destination);
+        const [removed] = sourceClone.splice(droppableSource.index, 1);
 
-        // const sourceClone = Array.from(source);
-        // const destClone = Array.from(destination);
-        // const [removed] = sourceClone.splice(droppableSource.index, 1);
+        //inserting "removed" element into destionation array
+        destClone.splice(droppableDestination.index, 0, removed);
 
-        // destClone.splice(droppableDestination.index, 0, removed);
-        // console.log("move -> removed", removed)
-
-        // const result = {};
-        // result[droppableSource.droppableId] = sourceClone;
-        // console.log(droppableSource.droppableId)
-        // result[droppableDestination.droppableId] = destClone;
-
-        // return result;
+        const result = {};
+        result[droppableSource.droppableId] = sourceClone;
+        result[droppableDestination.droppableId] = destClone;
+        
+        //updating project status
+        projectStatusHandler(removed, droppableDestination.droppableId)
+        return result;
     };
 
     function onDragEnd(result) {
         const { source, destination } = result;
         let localState, setLocalState;
-
-        console.log(source, destination)
+        let futureState, setFutureState;
 
         // dropped outside the list
         if (!destination) {
             return;
         }
+        // TODO: add scalability e.g. ability to work with more than 3 statuses
         if (source.droppableId === "0") {
             localState = backlog;
             setLocalState = setBacklog;
@@ -105,9 +119,20 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
             setLocalState = setCompleted;
         }
 
+        if (destination.droppableId === "0") {
+            futureState = backlog;
+            setFutureState = setBacklog;
+        } else if (destination.droppableId === "1") {
+            futureState = inProgress;
+            setFutureState = setInProgress;
+        } else if (destination.droppableId === "2") {
+            futureState = completed;
+            setFutureState = setCompleted;
+        }
+
         const sInd = +source.droppableId;
         const dInd = +destination.droppableId;
-        // TODO: fix else statement
+
         if (sInd === dInd) {
             const items = reorder(
                 [...localState],
@@ -116,14 +141,10 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
             );
             setLocalState(items);
         } else {
-            const result = move(projects[sInd], backlog[dInd], source, destination);
-            // const newState = [...completed];
-            // newState[sInd] = result[sInd];
-            // newState[dInd] = result[dInd];
-
-            // setLocalState(newState.filter(group => group.length));
+            const result = move(localState, futureState, source, destination);
+            setLocalState(result[sInd]);
+            setFutureState(result[dInd]);
         }
-
     }
 
     return (

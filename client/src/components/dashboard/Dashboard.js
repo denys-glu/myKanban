@@ -34,22 +34,12 @@ function Dashboard() {
 
     function projectStatusHandler(project, newStatus) {
 
-        if (project.status === 2) {
+        if (project.status === "2" && newStatus === undefined) {
             deleteProject(project);
-            return true;
-        }
-        
-        switch (project.status) {
-            case 0:
-                project.status = 1
-                break;
-            case 1:
-                project.status = 2
-                break;
-            default:
-                console.log("some unknown status received")
+            return;
         }
 
+        project.status = newStatus;
         axios.put(`${API_URL}update/${project._id}`, project)
             .then(res => {
                 console.log("project successfully updated: ", res)
