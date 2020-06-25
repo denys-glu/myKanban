@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 
-function AddProjectForm() {
+function AddTicketForm() {
     const [name, setName] = useState("");
     const [nameErr, setNameErr] = useState("");
     const [dueDate, setDueDate] = useState("");
@@ -26,14 +26,14 @@ function AddProjectForm() {
 
     function submitHandler(e) {
         e.preventDefault();
-        axios.post('http://localhost:8000/api/projects/new', { name, dueDate })
+        axios.post('http://localhost:8000/api/tickets/new', { name, dueDate })
             .then(res => {
                 navigate("/");
             })
             .catch(err => {
                 console.log("Error happend :(", err);
                 if (err.response.data.error.name === "MongoError") {
-                    setNameErr(`Project name must be unique, "${err.response.data.error.keyValue.name}" has already been taken!`);
+                    setNameErr(`Ticket name must be unique, "${err.response.data.error.keyValue.name}" has already been taken!`);
                 } else {
                     const errorResponse = err.response.data.error.errors; // Get the errors from err.response.data
                     for (const key of Object.keys(errorResponse)) { // Loop through all errors and get the messages
@@ -59,7 +59,7 @@ function AddProjectForm() {
                         <form onSubmit={submitHandler}>
                             <div className="form-group">
                                 {nameErr && <p className="text-danger fs32" >{nameErr}</p>}
-                                <label htmlFor="" className="form-heading fs40">Project Name: </label>
+                                <label htmlFor="" className="form-heading fs40">Ticket Name: </label>
                                 <input type="text" className="form-control fs32" value={name} onChange={e => nameHandler(e.target)} />
                             </div>
                             <div className="form-group">
@@ -67,7 +67,7 @@ function AddProjectForm() {
                                 <label htmlFor="" className="form-heading fs40">Due Date: </label>
                                 <input type="date" className="form-control fs32" value={dueDate} onChange={e => dueDateHandler(e.target)} />
                             </div>
-                            <button className="btn  fs32 btn-success" type="submit">Add Project</button>
+                            <button className="btn  fs32 btn-success" type="submit">Add Ticket</button>
                         </form>
                     </div>
                 </div>
@@ -76,4 +76,4 @@ function AddProjectForm() {
     )
 }
 
-export default AddProjectForm;
+export default AddTicketForm;

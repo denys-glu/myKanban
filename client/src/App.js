@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { Router } from '@reach/router';
 import Dashboard from './components/dashboard/Dashboard';
-import AddProjectForm from './components/dashboard/AddProjectForm';
+import AddTicketForm from './components/dashboard/AddTicketForm';
 
 function App() {
     return (
@@ -18,7 +18,7 @@ function App() {
             </div>
             <Router>
                 <Dashboard path="/" />
-                <AddProjectForm path="projects/new" />
+                <AddTicketForm path="tickets/new" />
             </Router>
         </div>
     );

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import Project from './Project';
+import Ticket from './Ticket';
 
-function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
+function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
 
     const [backlog, setBacklog] = useState([]);
     const [inProgress, setInProgress] = useState([]);
@@ -27,25 +27,25 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
         }
     ]
 
-    function saveAndSortProjects(data) {
-        console.log("saveAndSortProjects -> data", data)
+    function saveAndSortTickets(data) {
+        console.log("saveAndSortTickets -> data", data)
         data = data.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
         setBacklog(data
-            .filter(project => project.status === "0"))
+            .filter(ticket => ticket.status === "0"))
             
         setInProgress(data
-            .filter(project => project.status === "1"))
+            .filter(ticket => ticket.status === "1"))
 
         setCompleted(data
-            .filter(project => project.status === "2"))
+            .filter(ticket => ticket.status === "2"))
     }
 
     useEffect(() => {
-        saveAndSortProjects(projects)
+        saveAndSortTickets(tickets)
     }, [])
 
     // DnD variables
-    const [state, setState] = useState(projects);
+    const [state, setState] = useState(tickets);
 
 
     // DnD content
@@ -93,8 +93,8 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
         result[droppableSource.droppableId] = sourceClone;
         result[droppableDestination.droppableId] = destClone;
         
-        //updating project status
-        projectStatusHandler(removed, droppableDestination.droppableId)
+        //updating ticket status
+        ticketStatusHandler(removed, droppableDestination.droppableId)
         return result;
     };
 
@@ -159,13 +159,13 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
                         >
                             <div className="transparent-background pt-3">
                                 <h2 className="backlog-heading fs40">Backlog</h2>
-                                <div className="projects backlog">
+                                <div className="tickets backlog">
                                     {
                                         backlog
-                                            .map((project, i) => (
+                                            .map((ticket, i) => (
                                                 <Draggable
-                                                    key={project.id + ""}
-                                                    draggableId={project.id + ""}
+                                                    key={ticket.id + ""}
+                                                    draggableId={ticket.id + ""}
                                                     index={i}
                                                 >
                                                     {(provided, snapshot) => (
@@ -178,7 +178,7 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
                                                                 provided.draggableProps.style
                                                             )}
                                                         >
-                                                            <Project project={project} callback={projectStatusHandler} />
+                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} />
                                                             {provided.placeholder}
                                                         </div>
                                                     )}
@@ -200,13 +200,13 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
                         >
                             <div className="transparent-background pt-3">
                                 <h2 className="in-progress-heading fs40">In Progress</h2>
-                                <div className="projects in-progress">
+                                <div className="tickets in-progress">
                                     {
                                         inProgress
-                                            .map((project, i) => (
+                                            .map((ticket, i) => (
                                                 <Draggable
-                                                    key={project.id + ""}
-                                                    draggableId={project.id + ""}
+                                                    key={ticket.id + ""}
+                                                    draggableId={ticket.id + ""}
                                                     index={i}
                                                 >
                                                     {(provided, snapshot) => (
@@ -219,7 +219,7 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
                                                                 provided.draggableProps.style
                                                             )}
                                                         >
-                                                            <Project project={project} callback={projectStatusHandler} />
+                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} />
                                                             {provided.placeholder}
                                                         </div>
                                                     )}
@@ -241,13 +241,13 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
                         >
                             <div className="transparent-background pt-3">
                                 <h2 className="completed-heading fs40">Completed</h2>
-                                <div className="projects completed">
+                                <div className="tickets completed">
                                     {
                                         completed
-                                            .map((project, i) => (
+                                            .map((ticket, i) => (
                                                 <Draggable
-                                                    key={project.id + ""}
-                                                    draggableId={project.id + ""}
+                                                    key={ticket.id + ""}
+                                                    draggableId={ticket.id + ""}
                                                     index={i}
                                                 >
                                                     {(provided, snapshot) => (
@@ -260,7 +260,7 @@ function DnDWrapper({ projects, setProjects, projectStatusHandler }) {
                                                                 provided.draggableProps.style
                                                             )}
                                                         >
-                                                            <Project project={project} callback={projectStatusHandler} />
+                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} />
                                                             {provided.placeholder}
                                                         </div>
                                                     )}

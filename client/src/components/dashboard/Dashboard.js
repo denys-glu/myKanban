@@ -4,49 +4,49 @@ import axios from 'axios';
 import DnDWrapper from './DnDWrapper';
 
 function Dashboard() {
-    const [projects, setProjects] = useState([])
+    const [tickets, setTickets] = useState([])
     const [loaded, setLoaded] = useState(false)
 
-    const API_URL = `http://localhost:8000/api/projects/`;
-    // const API_URL = `/api/projects/` // dev build
+    const API_URL = `http://localhost:8000/api/tickets/`;
+    // const API_URL = `/api/tickets/` // dev build
 
     useEffect(() => {
-        getProjects();
+        getTickets();
     }, [])
 
-    function getProjects() {
+    function getTickets() {
         axios.get(API_URL + "all")
             .then(res => {
-                // console.log("getProjects -> res.data", res.data)
-                setProjects(res.data)
+                // console.log("getTickets -> res.data", res.data)
+                setTickets(res.data)
                 setLoaded(true)
             })
             .catch(err => console.warn(err))
     }
 
-    function deleteProject(project) {
-        axios.delete(`${API_URL}delete/${project._id}`, { id: project._id })
+    function deleteTicket(ticket) {
+        axios.delete(`${API_URL}delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
-                console.log("Successfuly deleted a project: ", res)
-                getProjects();
+                console.log("Successfuly deleted a ticket: ", res)
+                getTickets();
             })
             .catch(err => console.log("Error while deleting: ", err))
     }
 
-    function projectStatusHandler(project, newStatus) {
+    function ticketStatusHandler(ticket, newStatus) {
 
-        if (project.status === "2" && newStatus === undefined) {
-            deleteProject(project);
+        if (ticket.status === "2" && newStatus === undefined) {
+            deleteTicket(ticket);
             return;
         }
 
-        project.status = newStatus;
-        axios.put(`${API_URL}update/${project._id}`, project)
+        ticket.status = newStatus;
+        axios.put(`${API_URL}update/${ticket._id}`, ticket)
             .then(res => {
-                console.log("project successfully updated: ", res)
-                getProjects();
+                console.log("ticket successfully updated: ", res)
+                getTickets();
             })
-            .catch(err => console.log("Error happend while updatin project: ", err))
+            .catch(err => console.log("Error happend while updatin ticket: ", err))
     }
     
     return (
@@ -55,17 +55,17 @@ function Dashboard() {
 
                 <div className="row">
                     {loaded ?
-                        <DnDWrapper projects={projects} 
-                                    setProjects={setProjects} 
-                                    projectStatusHandler={projectStatusHandler} />:
+                        <DnDWrapper tickets={tickets} 
+                            setTickets={setTickets} 
+                                    ticketStatusHandler={ticketStatusHandler} />:
                     <p>Loading...</p>
                     }
                 </div>
                 <div className="row">
                     <div className="col text-left p-3">
-                        <Link className="btn  fs32 btn-success" to="projects/new">
+                        <Link className="btn  fs32 btn-success" to="tickets/new">
                             <div className="plus radius mr-2"></div>
-                            Add New Project
+                            Add New Ticket
                         </Link>
                     </div>
                 </div>
