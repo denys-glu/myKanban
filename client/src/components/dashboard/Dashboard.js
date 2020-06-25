@@ -8,6 +8,7 @@ function Dashboard() {
     const [loaded, setLoaded] = useState(false)
 
     const API_URL = `http://localhost:8000/api/projects/`;
+    // const API_URL = `/api/projects/` // dev build
 
     useEffect(() => {
         getProjects();
