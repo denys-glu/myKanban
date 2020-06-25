@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const dbName = "ProjectManager"
+const dbName = "MyKanban"
 mongoose.connect(`mongodb://localhost/${dbName}`, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,

@@ -1,8 +1,8 @@
-const KanbanController = require("../controllers/myKanban.controller");
+const TicketController = require("../controllers/ticket.controller");
 
 module.exports = app => {
-    app.get("/api/projects/all", KanbanController.getAllProjects);
-    app.post("/api/projects/new", KanbanController.createNewProject);
-    app.put("/api/projects/update/:id", KanbanController.updateExistingProjectStatus);
-    app.delete("/api/projects/delete/:id", KanbanController.deleteAnExistingProject);
+    app.get("/api/tickets/all", TicketController.getAllTickets);
+    app.post("/api/tickets/new", TicketController.createNewTicket);
+    app.put("/api/tickets/update/:id", TicketController.updateExistingTicketStatus);
+    app.delete("/api/tickets/delete/:id", TicketController.deleteAnExistingTicket);
 };
