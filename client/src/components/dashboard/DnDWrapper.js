@@ -8,7 +8,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
     const [inProgress, setInProgress] = useState([]);
     const [completed, setCompleted] = useState([]);
 
-    const statuses1 = {
+    const statuses = {
         0: {
             name: "Backlog",
             alias: "backlog"
@@ -22,24 +22,6 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
             alias: "completed"
         }
     }
-    const statuses = [
-        {
-            code: "0",
-            name: "Backlog",
-            alias: "backlog"
-
-        },
-        {
-            code: "1",
-            name: "In Progress",
-            alias: "inProgress"
-        },
-        {
-            code: "2",
-            name: "Completed",
-            alias: "completed"
-        }
-    ]
 
     function saveAndSortTickets(data) {
         ''
@@ -173,14 +155,14 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                     Object.values(result).map((status, idx) => (
                         <Droppable droppableId={idx+""} key={idx}>
                             {(provided, snapshot) => (
-                                <div className="col-4"
+                                <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12"
                                     ref={provided.innerRef}
                                     style={getListStyle(snapshot.isDraggingOver)}
                                     {...provided.droppableProps}
                                 >
                                     <div className="transparent-background pt-3">
-                                        <h2 className="backlog-heading fs40">{statuses1[idx].name}</h2>
-                                        <div className={"tickets " + statuses1[idx].alias}>
+                                        <h2 className={statuses[idx].alias + "-heading fs40"}>{statuses[idx].name}</h2>
+                                        <div className={"tickets " + statuses[idx].alias}>
                                         {
                                             status.map((ticket, i) => (
                                             <Draggable
@@ -198,7 +180,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                                                             provided.draggableProps.style
                                                         )}
                                                     >
-                                                        <Ticket ticket={ticket} callback={ticketStatusHandler} />
+                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} initStatus={statuses[idx].name} />
                                                         {provided.placeholder}
                                                     </div>
                                                 )}
