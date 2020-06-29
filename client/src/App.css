@@ -74,28 +74,32 @@ body{
     overflow-y: scroll;
 }
 .transparent-background{
-  background-color: rgba(255, 255, 255, 0.308);
-  border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.308);
+    border-radius: 30px;
+}
+.card {
+    border:none;
+    background-color: transparent;
 }
 .item {
-    background-size: 330px 250px;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     background-color: transparent !important;
-    max-width: 100%;
-    min-height: 250px;
     font-weight: bold;
+    min-height: 250px;
     font-size: 25px;
-    padding-top: 18px;
+    padding-top: 26px;
+    padding-right: 40px;
     border: none;
 }
 .backlog .item{
-  background-image: url("./images/yellowNote.png");
+    background-image: url("./images/yellowNote.png");
 }
 .backlog-heading, 
 .in-progress-heading, 
 .completed-heading,
 .form-heading{
-  color: rgb(7, 103, 133);
+    color: rgb(7, 103, 133);
 }
 
 .in-progress .item{
@@ -103,6 +107,9 @@ body{
 }
 .completed .item{
   background-image: url('./images/greenNote.png');
+}
+.fs24{
+  font-size:24px;
 }
 .fs28{
   font-size:28px;

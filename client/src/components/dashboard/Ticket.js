@@ -1,7 +1,6 @@
 import React from 'react';
 
-function Ticket({ ticket, callback }) {
-// console.log("Ticket -> ticket", ticket)
+function Ticket({ ticket, callback, initStatus }) {
     
     const currentDate = new Date();
     let status = "warning";
@@ -17,8 +16,8 @@ function Ticket({ ticket, callback }) {
     }
     return (
         <>
-            <div className="card item m-2" >
-                <div className="card-body">
+            <div className="card m-2" >
+                <div className="card-body item">
                     <p className="card-title fs32">{ticket.name}</p>
                         {
                             isDue ?
@@ -26,10 +25,11 @@ function Ticket({ ticket, callback }) {
                             <p className="text-left">Due date: {ticket.dueDate.slice(0, -14)}</p>
                         }
                     {
+                        // TODO: make button a standalone component
                         (ticket.status === "Completed") ?
-                            <button onClick={ () => callback(ticket)} className={"btn fs28 btn-" + status}>Remove ticket</button>
+                            <button onClick={ () => callback(ticket)} className={"btn fs24 btn-" + status}>Remove ticket</button>
                         :
-                            <button onClick={ () => callback(ticket)} className={"btn fs32 btn-" + status}>{ticket.status} <strong>></strong></button>
+                            <button onClick={() => callback(ticket)} className={"btn fs24 btn-" + status}>{initStatus} <strong>></strong></button>
                     }
                 </div>
             </div>
