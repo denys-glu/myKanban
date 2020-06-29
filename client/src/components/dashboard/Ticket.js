@@ -1,6 +1,8 @@
 import React from 'react';
 
 function Ticket({ ticket, callback }) {
+// console.log("Ticket -> ticket", ticket)
+    
     const currentDate = new Date();
     let status = "warning";
     let isDue = false;

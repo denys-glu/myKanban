@@ -3,7 +3,7 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 
-const TicketSchema = new Schema({
+const ProjectSchema = new Schema({
     name: {
         type: String,
         required: [true, "Name is required!"],
@@ -16,17 +16,13 @@ const TicketSchema = new Schema({
     },
     status: { type: String, default: "0" },
     sortId: { type: Number, default: 0 },
-    priority: { type: Number, default: 0 },
     dueDate: {
-        type: Date,
-        required: [true, "Due date is required"]
+        type: Date
     },
-    // parent: {
-    //TODO: add parent, or one to many realtionship
-    // }
+    tickets: []
 }, { timestamps: true });
 
-TicketSchema.plugin(AutoIncrement, {inc_field: "id"})
-const Ticket = mongoose.model("TicketSchema", TicketSchema);
+ProjectSchema.plugin(AutoIncrement, { inc_field: "id" })
+const Project = mongoose.model("ProjectSchema", ProjectSchema);
 
-module.exports = Ticket;
+module.exports = Project;
