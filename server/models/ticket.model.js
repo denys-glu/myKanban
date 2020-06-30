@@ -15,8 +15,6 @@ const TicketSchema = new Schema({
         minlength: [10, "Description should be longer than 10 characters!"]
     },
     status: { type: String, default: "0" },
-    sortId: { type: Number, default: 0 },
-    priority: { type: Number, default: 0 },
     dueDate: {
         type: Date,
         required: [true, "Due date is required"]
@@ -27,6 +25,8 @@ const TicketSchema = new Schema({
 }, { timestamps: true });
 
 TicketSchema.plugin(AutoIncrement, {inc_field: "id"})
+TicketSchema.plugin(AutoIncrement, { inc_field: "priority"})
+
 const Ticket = mongoose.model("TicketSchema", TicketSchema);
 
 module.exports = Ticket;

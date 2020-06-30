@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
 function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
 
-    const [backlog, setBacklog] = useState([]);
-    const [inProgress, setInProgress] = useState([]);
-    const [completed, setCompleted] = useState([]);
+    const [groupedBy, setGroupedBy] = useState({});
 
     const statuses = {
         0: {
@@ -23,27 +22,20 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
         }
     }
 
-    function saveAndSortTickets(data) {
-        ''
-        console.log("saveAndSortTickets -> data", data)
-        data = data.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-        setBacklog(data
-            .filter(ticket => ticket.status === "0"))
+    function saveAndGroupTickets() {
 
-        setInProgress(data
-            .filter(ticket => ticket.status === "1"))
 
-        setCompleted(data
-            .filter(ticket => ticket.status === "2"))
+        setGroupedBy(LgroupBy(tickets, "status"))
+
+        // setGroupedBy(Object.values(tickets).reduce((r, ticket) => {
+        //     r[ticket.status] = [...(r[ticket.status] || []), ticket]
+        //     return r;
+        // }, {}))
     }
 
     useEffect(() => {
-        saveAndSortTickets(tickets)
-    }, [tickets])
-
-    // DnD variables
-    const [state, setState] = useState(tickets);
-
+        saveAndGroupTickets()
+    }, [])
 
     // DnD content
 
@@ -67,16 +59,27 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
         padding: grid
     });
 
+    // Reorder items in the same category
     const reorder = (list, startIndex, endIndex) => {
+        console.log("reorder -> list, startIndex, endIndex", list, startIndex, endIndex)
         const result = [...list];
         const [removed] = result.splice(startIndex, 1);
+        console.log("reorder -> removed", removed.name)
+
+        console.log("reorder -> result[endIndex]", result[endIndex].name)
+        let tempPriority = removed.priority;
+        removed.priority = result[endIndex].priority;
+        result[endIndex].priority = tempPriority+1;
+        // removed.priority = endIndex+1;
+        // result[endIndex].priority = startIndex+1;
+
         result.splice(endIndex, 0, removed);
 
         return result;
     };
 
     /**
-     * Moves an item from one list to another list.
+     * Moves an item from one category to another category.
      */
     const move = (source, destination, droppableSource, droppableDestination) => {
         const sourceClone = Array.from(source);
@@ -97,6 +100,8 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
 
     function onDragEnd(result) {
         const { source, destination } = result;
+        console.log("onDragEnd -> source, destination", source, destination)
+        console.log(groupedBy[+source.droppableId])
         let localState, setLocalState;
         let futureState, setFutureState;
 
@@ -104,56 +109,38 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
         if (!destination) {
             return;
         }
-        // TODO: add scalability e.g. ability to work with more than 3 statuses
-        if (source.droppableId === "0") {
-            localState = backlog;
-            setLocalState = setBacklog;
-        } else if (source.droppableId === "1") {
-            localState = inProgress;
-            setLocalState = setInProgress;
-        } else if (source.droppableId === "2") {
-            localState = completed;
-            setLocalState = setCompleted;
-        }
-
-        if (destination.droppableId === "0") {
-            futureState = backlog;
-            setFutureState = setBacklog;
-        } else if (destination.droppableId === "1") {
-            futureState = inProgress;
-            setFutureState = setInProgress;
-        } else if (destination.droppableId === "2") {
-            futureState = completed;
-            setFutureState = setCompleted;
-        }
 
         const sInd = +source.droppableId;
         const dInd = +destination.droppableId;
 
         if (sInd === dInd) {
-            const items = reorder(
-                [...localState],
-                result.source.index,
-                result.destination.index
-            );
-            setLocalState(items);
+            // const items = reorder(
+            //     groupedBy[destination.droppableId],
+            //     result.source.index,
+            //     result.destination.index
+            // );
+            // //Updating one prop in the Object of statuses
+            // setGroupedBy(prevState => ({
+            //     ...prevState,
+            //     [destination.droppableId]: items
+            // }))
         } else {
+            console.log("else")
             const result = move(localState, futureState, source, destination);
             setLocalState(result[sInd]);
             setFutureState(result[dInd]);
         }
     }
-    let result = Object.values(tickets).reduce((r, ticket) => {
-        r[ticket.status] = [...(r[ticket.status] || []), ticket]
-        return r;
-    }, {})
+
     // console.log("result: ", result)
     return (
         <>
             <DragDropContext onDragEnd={onDragEnd}>
                 {
-                    Object.values(result).map((status, idx) => (
-                        <Droppable droppableId={idx+""} key={idx}>
+                    Object.entries(groupedBy).map(([key], idx) => (
+                        
+                        <Droppable droppableId={key+""} key={idx}>
+
                             {(provided, snapshot) => (
                                 <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12"
                                     ref={provided.innerRef}
@@ -161,10 +148,10 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                                     {...provided.droppableProps}
                                 >
                                     <div className="transparent-background pt-3">
-                                        <h2 className={statuses[idx].alias + "-heading fs40"}>{statuses[idx].name}</h2>
-                                        <div className={"tickets " + statuses[idx].alias}>
+                                        <h2 className={statuses[key].alias + "-heading fs40"}>{statuses[key].name}</h2>
+                                        <div className={"tickets " + statuses[key].alias}>
                                         {
-                                            status.map((ticket, i) => (
+                                            groupedBy[key].sort(t => t.sortId).map((ticket, i) => (
                                             <Draggable
                                                 key={ticket.id + ""}
                                                 draggableId={ticket.id + ""}
@@ -180,144 +167,22 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                                                             provided.draggableProps.style
                                                         )}
                                                     >
-                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} initStatus={statuses[idx].name} />
+                                                        <Ticket ticket={ticket} callback={ticketStatusHandler} initStatus={statuses[key].name} />
                                                         {provided.placeholder}
                                                     </div>
                                                 )}
                                             </Draggable>
                                         ))}
                                         </div>
+                                        {provided.placeholder}
                                     </div>
                                 </div>
                             )}
                         </Droppable>
                     ))
                 }
-
-                {/* <Droppable droppableId="0">
-                    {(provided, snapshot) => (
-                        <div className="col-4"
-                            ref={provided.innerRef}
-                            style={getListStyle(snapshot.isDraggingOver)}
-                            {...provided.droppableProps}
-                        >
-                            <div className="transparent-background pt-3">
-                                <h2 className="backlog-heading fs40">Backlog</h2>
-                                <div className="tickets backlog">
-                                    {
-                                        backlog
-                                            .map((ticket, i) => (
-                                                <Draggable
-                                                    key={ticket.id + ""}
-                                                    draggableId={ticket.id + ""}
-                                                    index={i}
-                                                >
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            style={getItemStyle(
-                                                                snapshot.isDragging,
-                                                                provided.draggableProps.style
-                                                            )}
-                                                        >
-                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} />
-                                                            {provided.placeholder}
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))
-                                    }
-                                </div>
-                                {provided.placeholder}
-                            </div>
-                        </div>
-                    )}
-                </Droppable>
-                <Droppable droppableId="1">
-                    {(provided, snapshot) => (
-                        <div className="col-4 "
-                            ref={provided.innerRef}
-                            style={getListStyle(snapshot.isDraggingOver)}
-                            {...provided.droppableProps}
-                        >
-                            <div className="transparent-background pt-3">
-                                <h2 className="in-progress-heading fs40">In Progress</h2>
-                                <div className="tickets in-progress">
-                                    {
-                                        inProgress
-                                            .map((ticket, i) => (
-                                                <Draggable
-                                                    key={ticket.id + ""}
-                                                    draggableId={ticket.id + ""}
-                                                    index={i}
-                                                >
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            style={getItemStyle(
-                                                                snapshot.isDragging,
-                                                                provided.draggableProps.style
-                                                            )}
-                                                        >
-                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} />
-                                                            {provided.placeholder}
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))
-                                    }
-                                </div>
-                                {provided.placeholder}
-                            </div>
-                        </div>
-                    )}
-                </Droppable>
-                <Droppable droppableId="2">
-                    {(provided, snapshot) => (
-                        <div className="col-4 "
-                            ref={provided.innerRef}
-                            style={getListStyle(snapshot.isDraggingOver)}
-                            {...provided.droppableProps}
-                        >
-                            <div className="transparent-background pt-3">
-                                <h2 className="completed-heading fs40">Completed</h2>
-                                <div className="tickets completed">
-                                    {
-                                        completed
-                                            .map((ticket, i) => (
-                                                <Draggable
-                                                    key={ticket.id + ""}
-                                                    draggableId={ticket.id + ""}
-                                                    index={i}
-                                                >
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            style={getItemStyle(
-                                                                snapshot.isDragging,
-                                                                provided.draggableProps.style
-                                                            )}
-                                                        >
-                                                            <Ticket ticket={ticket} callback={ticketStatusHandler} />
-                                                            {provided.placeholder}
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))
-                                    }
-                                </div>
-                                {provided.placeholder}
-                            </div>
-                        </div>
-                    )}
-                </Droppable> */}
             </DragDropContext>
+        
         </>
     )
 }

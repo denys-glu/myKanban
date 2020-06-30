@@ -7,6 +7,8 @@ function AddTicketForm() {
     const [nameErr, setNameErr] = useState("");
     const [dueDate, setDueDate] = useState("");
     const [dueDateError, setDueDateError] = useState("");
+    const API_URL = `http://localhost:8000/api/tickets/`;
+    //const API_URL = `/api/tickets/` // dev build
 
     function nameHandler({ name, value }) {
         setName(value)
@@ -26,7 +28,7 @@ function AddTicketForm() {
 
     function submitHandler(e) {
         e.preventDefault();
-        axios.post('http://localhost:8000/api/tickets/new', { name, dueDate })
+        axios.post(`${API_URL}new`, { name, dueDate })
             .then(res => {
                 navigate("/");
             })

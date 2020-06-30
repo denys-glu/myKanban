@@ -8,7 +8,7 @@ function Dashboard() {
     const [loaded, setLoaded] = useState(false)
 
     const API_URL = `http://localhost:8000/api/tickets/`;
-    // const API_URL = `/api/tickets/` // dev build
+    //const API_URL = `/api/tickets/` // dev build
 
     useEffect(() => {
         getTickets();
@@ -34,19 +34,26 @@ function Dashboard() {
     }
 
     function ticketStatusHandler(ticket, newStatus) {
-
+    console.log("ticketStatusHandler -> ticket, newStatus", ticket, newStatus)
+        // TODO: Fix change status, new statuses structure?
         if (ticket.status === "2" && newStatus === undefined) {
-            deleteTicket(ticket);
+            console.log("delete")
+            // deleteTicket(ticket);
             return;
+        } else if (ticket.status !== "2" && newStatus === undefined) {
+            console.log("else if")
+
+        } else {
+            console.log("else")
+            ticket.status = newStatus;
+            // axios.put(`${API_URL}update/${ticket._id}`, ticket)
+            //     .then(res => {
+            //         console.log("ticket successfully updated: ", res)
+            //         getTickets();
+            //     })
+            //     .catch(err => console.log("Error happend while updatin ticket: ", err))
         }
 
-        ticket.status = newStatus;
-        axios.put(`${API_URL}update/${ticket._id}`, ticket)
-            .then(res => {
-                console.log("ticket successfully updated: ", res)
-                getTickets();
-            })
-            .catch(err => console.log("Error happend while updatin ticket: ", err))
     }
     
     return (
@@ -63,7 +70,7 @@ function Dashboard() {
                 </div>
                 <div className="row">
                     <div className="col text-left p-3">
-                        <Link className="btn  fs32 btn-success" to="tickets/new">
+                        <Link className="btn fs32 btn-success" to="tickets/new">
                             <div className="plus radius mr-2"></div>
                             Add New Ticket
                         </Link>
