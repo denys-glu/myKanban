@@ -7,12 +7,14 @@ const TicketSchema = new Schema({
     name: {
         type: String,
         required: [true, "Name is required!"],
-        minlength: [3, "Name should be longer than 3 characters!"],
+        minlength: [5, "Name should be longer than 5 characters!"],
+        maxlength: [50, "Name should not be longer than 50 characters!"],
         unique: true
     },
     description: {
         type: String,
-        minlength: [10, "Description should be longer than 10 characters!"]
+        minlength: [10, "Description should be longer than 10 characters!"],
+        maxlength: [1000, "Description should not be longer than 1000 characters!"]
     },
     status: { type: String, default: "0" },
     dueDate: {
