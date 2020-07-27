@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { Link } from '@reach/router';
 import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
@@ -69,7 +70,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
         console.log("reorder -> result[endIndex]", result[endIndex].name)
         let tempPriority = removed.priority;
         removed.priority = result[endIndex].priority;
-        result[endIndex].priority = tempPriority+1;
+        result[endIndex].priority = tempPriority + 1;
         // removed.priority = endIndex+1;
         // result[endIndex].priority = startIndex+1;
 
@@ -82,10 +83,11 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
      * Moves an item from one category to another category.
      */
     const move = (source, destination, droppableSource, droppableDestination) => {
-        const sourceClone = Array.from(source);
-        const destClone = Array.from(destination);
+        const sourceClone = Array.from(groupedBy[source]);
+        const destClone = Array.from(groupedBy[destination]);
         const [removed] = sourceClone.splice(droppableSource.index, 1);
 
+        removed.status = destination + ""
         //inserting "removed" element into destionation array
         destClone.splice(droppableDestination.index, 0, removed);
 
@@ -102,34 +104,24 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
         const { source, destination } = result;
         console.log("onDragEnd -> source, destination", source, destination)
         console.log(groupedBy[+source.droppableId])
-        let localState, setLocalState;
-        let futureState, setFutureState;
 
         // dropped outside the list
         if (!destination) {
             return;
         }
-
         const sInd = +source.droppableId;
         const dInd = +destination.droppableId;
+        if (sInd !== dInd) {
+            const updatedData = move(sInd, dInd, source, destination);
 
-        if (sInd === dInd) {
-            // const items = reorder(
-            //     groupedBy[destination.droppableId],
-            //     result.source.index,
-            //     result.destination.index
-            // );
-            // //Updating one prop in the Object of statuses
-            // setGroupedBy(prevState => ({
-            //     ...prevState,
-            //     [destination.droppableId]: items
-            // }))
-        } else {
-            console.log("else")
-            const result = move(localState, futureState, source, destination);
-            setLocalState(result[sInd]);
-            setFutureState(result[dInd]);
+            setGroupedBy(prevState => ({
+                ...prevState,
+                [sInd]: updatedData[sInd],
+                [dInd]: updatedData[dInd]
+            }))
         }
+
+
     }
 
     // console.log("result: ", result)
@@ -138,8 +130,8 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
             <DragDropContext onDragEnd={onDragEnd}>
                 {
                     Object.entries(groupedBy).map(([key], idx) => (
-                        
-                        <Droppable droppableId={key+""} key={idx}>
+
+                        <Droppable droppableId={key + ""} key={idx}>
 
                             {(provided, snapshot) => (
                                 <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12"
@@ -150,29 +142,31 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                                     <div className="transparent-background pt-3">
                                         <h2 className={statuses[key].alias + "-heading fs40"}>{statuses[key].name}</h2>
                                         <div className={"tickets " + statuses[key].alias}>
-                                        {
-                                            groupedBy[key].sort(t => t.sortId).map((ticket, i) => (
-                                            <Draggable
-                                                key={ticket.id + ""}
-                                                draggableId={ticket.id + ""}
-                                                index={i}
-                                            >
-                                                {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                        style={getItemStyle(
-                                                            snapshot.isDragging,
-                                                            provided.draggableProps.style
-                                                        )}
+                                            {
+                                                groupedBy[key].sort(t => t.sortId).map((ticket, i) => (
+                                                    <Draggable
+                                                        key={ticket.id + ""}
+                                                        draggableId={ticket.id + ""}
+                                                        index={i}
                                                     >
-                                                        <Ticket ticket={ticket} callback={ticketStatusHandler} initStatus={statuses[key].name} />
-                                                        {provided.placeholder}
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))}
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
+                                                                )}
+                                                            >
+                                                                <Link to={"tickets/" + ticket._id + "/edit"} className="remove-link-styles">
+                                                                    <Ticket ticket={ticket} callback={ticketStatusHandler} initStatus={statuses[key].name} />
+                                                                </Link>
+                                                                {provided.placeholder}
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
                                         </div>
                                         {provided.placeholder}
                                     </div>
@@ -182,7 +176,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                     ))
                 }
             </DragDropContext>
-        
+
         </>
     )
 }

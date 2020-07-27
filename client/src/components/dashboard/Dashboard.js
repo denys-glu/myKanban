@@ -7,25 +7,27 @@ function Dashboard() {
     const [tickets, setTickets] = useState([])
     const [loaded, setLoaded] = useState(false)
 
-    const API_URL = `http://localhost:8000/api/tickets/`;
-    //const API_URL = `/api/tickets/` // dev build
+    const API_URL = `http://localhost:8000/api/tickets`;
+    // const API_URL = `/api/tickets/` // dev build
 
     useEffect(() => {
         getTickets();
     }, [])
 
     function getTickets() {
-        axios.get(API_URL + "all")
+        axios.get(API_URL)
             .then(res => {
-                // console.log("getTickets -> res.data", res.data)
-                setTickets(res.data)
-                setLoaded(true)
+                if(res.data.message === "Success") {
+                    // console.log("getTickets -> res.data", res.data.results)
+                    setTickets(res.data.results)
+                    setLoaded(true)
+                }
             })
             .catch(err => console.warn(err))
     }
 
     function deleteTicket(ticket) {
-        axios.delete(`${API_URL}delete/${ticket._id}`, { id: ticket._id })
+        axios.delete(`${API_URL}/delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
                 console.log("Successfuly deleted a ticket: ", res)
                 getTickets();
@@ -38,7 +40,7 @@ function Dashboard() {
         // TODO: Fix change status, new statuses structure?
         if (ticket.status === "2" && newStatus === undefined) {
             console.log("delete")
-            // deleteTicket(ticket);
+            deleteTicket(ticket);
             return;
         } else if (ticket.status !== "2" && newStatus === undefined) {
             console.log("else if")
@@ -46,12 +48,12 @@ function Dashboard() {
         } else {
             console.log("else")
             ticket.status = newStatus;
-            // axios.put(`${API_URL}update/${ticket._id}`, ticket)
-            //     .then(res => {
-            //         console.log("ticket successfully updated: ", res)
-            //         getTickets();
-            //     })
-            //     .catch(err => console.log("Error happend while updatin ticket: ", err))
+            axios.patch(`${API_URL}/update/${ticket._id}`, ticket)
+                .then(res => {
+                    console.log("ticket successfully updated: ", res)
+                    getTickets();
+                })
+                .catch(err => console.log("Error happend while updatin ticket: ", err))
         }
 
     }
