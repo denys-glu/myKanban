@@ -20,7 +20,7 @@ function Ticket({ ticket, callback, initStatus }) {
                 <div className="card-body item">
                 <i className="fas fa-cog ticket-settings"></i>
                     <p className="card-title fs32">{ticket.name}</p>
-                    <p className="card-title fs26 text-left">{ticket.description.substring(0,40)+"..."}</p>
+                    {ticket.description && <p className="card-title fs26 text-left">{ticket.description.substring(0,40)+"..."}</p>}
                         {
                             isDue ?
                             <p className="text-left text-danger">Due date: {ticket.dueDate.slice(0, -14)}</p> :
