@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 
+import Context from '../utilities/MainContext';
+
 function TicketForm(props) {
     const { action } = props;
-    const API_URL = `http://localhost:8000/api/tickets`;
-    // const API_URL = `/api/tickets/` // dev build
+
+    const API_URL = useContext(Context).API_URL;
 
     const [ticket, setTicket] = useState({
         name: "",

@@ -1,11 +1,16 @@
 import React from 'react';
 import './App.css';
-import { Router } from '@reach/router';
+import { Router, Link } from '@reach/router';
+import Context from './components/utilities/MainContext';
 import Dashboard from './components/dashboard/Dashboard';
 import TicketForm from './components/dashboard/TicketForm';
 import Changelog from './components/utilities/Changelog';
 
 function App() {
+    const settings = {
+        // API_URL: "http://localhost:8000/api/tickets"
+        API_URL: "/api/tickets"
+    }
     return (
         <div className="App">
 
@@ -17,12 +22,14 @@ function App() {
                     </div>
                 </div>
             </div>
-            <Router>
-                <Dashboard path="/" />
-                <TicketForm path="tickets/new" action="create" />
-                <TicketForm path="tickets/:id/edit" action="edit" />
-                
-            </Router>
+            <Context.Provider value={settings}>
+                <Router>
+                    <Dashboard path="/" />
+                    <TicketForm path="tickets/new" action="create" />
+                    <TicketForm path="tickets/:id/edit" action="edit" />
+                    <Changelog path="changelog" />
+                </Router>
+            </Context.Provider>
         </div>
     );
 }

@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Link } from '@reach/router';
 import axios from 'axios';
+
+import Context from '../utilities/MainContext';
 import DnDWrapper from './DnDWrapper';
 
 function Dashboard() {
     const [tickets, setTickets] = useState([])
     const [loaded, setLoaded] = useState(false)
 
-    const API_URL = `http://localhost:8000/api/tickets`;
-    // const API_URL = `/api/tickets/` // dev build
-
+    const API_URL = useContext(Context).API_URL;
+   
     useEffect(() => {
         getTickets();
     }, [])
