@@ -4,7 +4,7 @@ import { Link } from '@reach/router';
 const Changelog = () => {
     return (
         <div>
-            <div className="container transparent-background p-3 changelog">
+            <div className="container transparent-background p-3 mt-5 changelog">
                 <div className="row">
                     <div className="col text-right">
                         <Link to="/"><h3>Go back to Dashboard</h3></Link>
@@ -16,6 +16,7 @@ const Changelog = () => {
                             <li>7/29/2020
                                 <ul>
                                     <li>Added global context object</li>
+                                    <li>Added responsivnes to the ticket form</li>
                                 </ul>    
                             </li>
                             <li>7/28/2020

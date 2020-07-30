@@ -125,7 +125,7 @@ function TicketForm(props) {
                     </div>
                 </div>
                 <div className="row d-flex transparent-background justify-content-center">
-                    <div className="col-6 fs32 mt-3">
+                    <div className="col-xs-12 col-sm-12 col-md-8 col-lg-6 fs32 mt-3">
                         <form onSubmit={submitHandler}>
                             <div className="form-group">
                                 {errors.name && <p className="text-danger fs32" >{errors.name}</p>}
@@ -142,7 +142,7 @@ function TicketForm(props) {
                                 <label htmlFor="" className="form-heading fs40">Due Date: </label>
                                 <input type="date" className="form-control fs32" value={ticket.dueDate.substring(0, 10)} name="dueDate" onChange={changeHandler} />
                             </div>
-                            <button className="btn  fs32 btn-success" type="submit">Submit</button>
+                            <button className="btn fs32 btn-success" type="submit">Submit</button>
                         </form>
                     </div>
                 </div>

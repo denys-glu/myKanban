@@ -77,6 +77,7 @@ function Dashboard() {
                             <div className="plus radius mr-2"></div>
                             Add New Ticket
                         </Link>
+                        <Link className="btn fs32 btn-warning ml-5" to="changelog"><strong>Changelog</strong></Link>
                     </div>
                 </div>
             </div>

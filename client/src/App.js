@@ -8,8 +8,8 @@ import Changelog from './components/utilities/Changelog';
 
 function App() {
     const settings = {
-        // API_URL: "http://localhost:8000/api/tickets"
-        API_URL: "/api/tickets"
+        API_URL: "http://localhost:8000/api/tickets"
+        // API_URL: "/api/tickets"
     }
     return (
         <div className="App">
@@ -18,7 +18,6 @@ function App() {
                 <div className="row">
                     <div className="col title-head">
                         <h1>Project Manager - <small>under development</small></h1>
-                        <h4><Link to="changelog"><strong>changelog</strong></Link></h4>
                     </div>
                 </div>
             </div>

@@ -102,8 +102,8 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
 
     function onDragEnd(result) {
         const { source, destination } = result;
-        console.log("onDragEnd -> source, destination", source, destination)
-        console.log(groupedBy[+source.droppableId])
+        // console.log("onDragEnd -> source, destination", source, destination)
+        // console.log(groupedBy[+source.droppableId])
 
         // dropped outside the list
         if (!destination) {
@@ -112,6 +112,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
         const sInd = +source.droppableId;
         const dInd = +destination.droppableId;
         if (sInd !== dInd) {
+            console.log("doing DnD stuff")
             const updatedData = move(sInd, dInd, source, destination);
 
             setGroupedBy(prevState => ({
@@ -119,9 +120,9 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                 [sInd]: updatedData[sInd],
                 [dInd]: updatedData[dInd]
             }))
+        } else {
+            return
         }
-
-
     }
 
     // console.log("result: ", result)
