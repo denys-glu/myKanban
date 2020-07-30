@@ -6,7 +6,6 @@ import Context from '../utilities/MainContext';
 
 function TicketForm(props) {
     const { action } = props;
-
     const API_URL = useContext(Context).API_URL;
 
     const [ticket, setTicket] = useState({
@@ -15,6 +14,7 @@ function TicketForm(props) {
         dueDate: "",
         description: ""
     });
+    // TODO: add dynamic validation
     const [errors, setErrors] = useState({
         name: "",
         style: "",
@@ -24,7 +24,7 @@ function TicketForm(props) {
 
     useEffect(() => {
         if (action === "edit") {
-            console.log(props)
+            // console.log(props)
             axios.get(`${API_URL}/${props.id}`)
                 .then(response => {
                     if (response.data.message === "Success") {
@@ -35,7 +35,16 @@ function TicketForm(props) {
                 })
         }
     }, [])
-
+    //TODO: there is another delete ticjketc function inside Dashboard, find way how to remove one of them
+    function deleteTicket() {
+        console.log(ticket)
+        axios.delete(`${API_URL}/delete/${ticket._id}`, { id: ticket._id })
+            .then(res => {
+                console.log("Successfuly deleted a ticket: ", res)
+                navigate("/")
+            })
+            .catch(err => console.log("Error while deleting: ", err))
+    }
 
     function changeHandler(e) {
         const newTicket = {
@@ -124,7 +133,7 @@ function TicketForm(props) {
                         <Link to="/" className="fs36 text-dark">Back To Dashboard</Link>
                     </div>
                 </div>
-                <div className="row d-flex transparent-background justify-content-center">
+                <div className="row d-flex transparent-background justify-content-center pb-5">
                     <div className="col-xs-12 col-sm-12 col-md-8 col-lg-6 fs32 mt-3">
                         <form onSubmit={submitHandler}>
                             <div className="form-group">
@@ -142,7 +151,12 @@ function TicketForm(props) {
                                 <label htmlFor="" className="form-heading fs40">Due Date: </label>
                                 <input type="date" className="form-control fs32" value={ticket.dueDate.substring(0, 10)} name="dueDate" onChange={changeHandler} />
                             </div>
-                            <button className="btn fs32 btn-success" type="submit">Submit</button>
+                            {
+                                action === "edit" ? 
+                                    <><a className="btn fs32 btn-danger mr-5 w200" onClick={ () => deleteTicket() }>Delete ticket</a> 
+                                    <button className="btn fs32 btn-success w200" type="submit">Update</button></>:
+                                    <button className="btn fs32 btn-success w200" type="submit">Submit</button>
+                            }
                         </form>
                     </div>
                 </div>

@@ -26,7 +26,8 @@ function Dashboard() {
             })
             .catch(err => console.warn(err))
     }
-
+    
+    //TODO: there is another delete ticjketc function inside TicketForm, find way how to remove one of them
     function deleteTicket(ticket) {
         axios.delete(`${API_URL}/delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
@@ -67,7 +68,7 @@ function Dashboard() {
                     {loaded ?
                         <DnDWrapper tickets={tickets} 
                             setTickets={setTickets} 
-                                    ticketStatusHandler={ticketStatusHandler} />:
+                            ticketStatusHandler={ticketStatusHandler} />:
                     <p>Loading...</p>
                     }
                 </div>

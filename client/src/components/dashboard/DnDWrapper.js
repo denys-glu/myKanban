@@ -4,7 +4,7 @@ import { Link } from '@reach/router';
 import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
-function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
+function DnDWrapper({ tickets, setTickets, ticketStatusHandler, deleteHandler }) {
 
     const [groupedBy, setGroupedBy] = useState({});
 
@@ -17,21 +17,14 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
             name: "In Progress",
             alias: "in-progress"
         },
-        2: {
+        777: {
             name: "Completed",
             alias: "completed"
         }
     }
 
     function saveAndGroupTickets() {
-
-
         setGroupedBy(LgroupBy(tickets, "status"))
-
-        // setGroupedBy(Object.values(tickets).reduce((r, ticket) => {
-        //     r[ticket.status] = [...(r[ticket.status] || []), ticket]
-        //     return r;
-        // }, {}))
     }
 
     useEffect(() => {
@@ -140,7 +133,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                                     style={getListStyle(snapshot.isDraggingOver)}
                                     {...provided.droppableProps}
                                 >
-                                    <div className="transparent-background pt-3">
+                                    <div className="transparent-background pt-3 pb-3">
                                         <h2 className={statuses[key].alias + "-heading fs40"}>{statuses[key].name}</h2>
                                         <div className={"tickets " + statuses[key].alias}>
                                             {
@@ -160,8 +153,12 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler }) {
                                                                     provided.draggableProps.style
                                                                 )}
                                                             >
-                                                                <Link to={"tickets/" + ticket._id + "/edit"} className="remove-link-styles">
-                                                                    <Ticket ticket={ticket} callback={ticketStatusHandler} initStatus={statuses[key].name} />
+                                                                <Link to={"tickets/" + ticket._id + "/edit"} 
+                                                                        state={{deleteHandler}}
+                                                                        className="remove-link-styles">
+                                                                    <Ticket ticket={ticket} 
+                                                                            callback={ticketStatusHandler} 
+                                                                            initStatus={statuses[key].name}/>
                                                                 </Link>
                                                                 {provided.placeholder}
                                                             </div>

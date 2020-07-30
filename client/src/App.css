@@ -132,6 +132,10 @@ body {
   font-weight: bold;
 }
 
+.w200{
+  width: 200px
+}
+
 /* Scroll bar */
 
 .projects::-webkit-scrollbar {
