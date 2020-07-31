@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Link } from '@reach/router';
+
+import Context from '../utilities/MainContext';
 import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
@@ -8,20 +10,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler, deleteHandler })
 
     const [groupedBy, setGroupedBy] = useState({});
 
-    const statuses = {
-        0: {
-            name: "Backlog",
-            alias: "backlog"
-        },
-        1: {
-            name: "In Progress",
-            alias: "in-progress"
-        },
-        777: {
-            name: "Completed",
-            alias: "completed"
-        }
-    }
+    const statuses = useContext(Context).statuses;
 
     function saveAndGroupTickets() {
         setGroupedBy(LgroupBy(tickets, "status"))

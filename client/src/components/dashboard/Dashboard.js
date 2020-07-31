@@ -10,7 +10,7 @@ function Dashboard() {
     const [loaded, setLoaded] = useState(false)
 
     const API_URL = useContext(Context).API_URL;
-   
+
     useEffect(() => {
         getTickets();
     }, [])
@@ -26,8 +26,8 @@ function Dashboard() {
             })
             .catch(err => console.warn(err))
     }
-    
-    //TODO: there is another delete ticjketc function inside TicketForm, find way how to remove one of them
+
+    //TODO: there is another delete ticket function inside TicketForm, find way how to remove one of them
     function deleteTicket(ticket) {
         axios.delete(`${API_URL}/delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
@@ -38,13 +38,13 @@ function Dashboard() {
     }
 
     function ticketStatusHandler(ticket, newStatus) {
-    console.log("ticketStatusHandler -> ticket, newStatus", ticket, newStatus)
+        console.log("ticketStatusHandler -> ticket, newStatus", ticket, newStatus)
         // TODO: Fix change status, new statuses structure?
-        if (ticket.status === "2" && newStatus === undefined) {
+        if (ticket.status === "777" && newStatus === undefined) {
             console.log("delete")
             deleteTicket(ticket);
             return;
-        } else if (ticket.status !== "2" && newStatus === undefined) {
+        } else if (ticket.status !== "777" && newStatus === undefined) {
             console.log("else if")
 
         } else {

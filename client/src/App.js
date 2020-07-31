@@ -8,8 +8,21 @@ import Changelog from './components/utilities/Changelog';
 
 function App() {
     const settings = {
-        API_URL: "http://localhost:8000/api/tickets"
-        // API_URL: "/api/tickets"
+        API_URL: process.env.REACT_APP_API_LINK,
+        statuses: {
+            0: {
+                name: "Backlog",
+                alias: "backlog"
+            },
+            1: {
+                name: "In Progress",
+                alias: "in-progress"
+            },
+            777: {
+                name: "Completed",
+                alias: "completed"
+            }
+        }
     }
     return (
         <div className="App">
