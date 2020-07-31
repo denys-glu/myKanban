@@ -1,17 +1,10 @@
 import React from 'react';
 
-function Ticket({ ticket, callback, initStatus }) {
+function Ticket({ ticket }) {
 
     const currentDate = new Date();
-    let status = "warning";
     let isDue = false;
 
-    //TODO: do we need this here?
-    if (ticket.status === "Completed") {
-        status = "danger"
-    } else if (ticket.status === "In Progress") {
-        status = "success"
-    }
 
     if (new Date(ticket.dueDate) < currentDate.setDate(currentDate.getDate() - 1)) {
         isDue = true
