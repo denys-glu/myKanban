@@ -13,6 +13,13 @@ const Changelog = () => {
                 <div className="row">
                     <div className="col text-left">
                         <ul className="fs28">
+                            <li>7/31/2020
+                                <ul>
+                                    <li>Added .env files with PROD and DEV API urls</li>
+                                    <li>CRUD pattern is now fully supported</li>
+                                    <li>All statuses columns are now displayed even if there is no tickets with such status</li>
+                                </ul>    
+                            </li>
                             <li>7/29/2020
                                 <ul>
                                     <li>Added global context object</li>

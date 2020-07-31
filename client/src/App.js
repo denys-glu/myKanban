@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Router, Link } from '@reach/router';
+import { Router } from '@reach/router';
 import Context from './components/utilities/MainContext';
 import Dashboard from './components/dashboard/Dashboard';
 import TicketForm from './components/dashboard/TicketForm';

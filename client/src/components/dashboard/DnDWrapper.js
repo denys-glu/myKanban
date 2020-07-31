@@ -13,7 +13,14 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler, deleteHandler })
     const statuses = useContext(Context).statuses;
 
     function saveAndGroupTickets() {
-        setGroupedBy(LgroupBy(tickets, "status"))
+        // checking if we have all statuses
+        let temp = LgroupBy(tickets, "status");
+        for(let key in statuses) {
+            if(!temp.hasOwnProperty(key)) {
+               temp[key] = []
+            }
+        }
+        setGroupedBy(temp)
     }
 
     useEffect(() => {
