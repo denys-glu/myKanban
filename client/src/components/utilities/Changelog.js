@@ -13,6 +13,12 @@ const Changelog = () => {
                 <div className="row">
                     <div className="col text-left">
                         <ul className="fs28">
+                            <li>8/04/2020
+                                <ul>
+                                    <li>Added API to create Projects</li>
+                                    <li>Added API to add ticket to Project</li>
+                                </ul>    
+                            </li>
                             <li>7/31/2020
                                 <ul>
                                     <li>Added .env files with PROD and DEV API urls</li>

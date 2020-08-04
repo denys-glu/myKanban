@@ -20,10 +20,7 @@ const TicketSchema = new Schema({
     dueDate: {
         type: Date,
         required: [true, "Due date is required"]
-    },
-    // parent: {
-    //TODO: add parent, or one to many realtionship
-    // }
+    }
 }, { timestamps: true });
 
 TicketSchema.plugin(AutoIncrement, {inc_field: "id"})
