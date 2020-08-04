@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const dbName = "MyKanban"
+const dbName = "MyKanban";
+mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 mongoose.connect(`mongodb://localhost/${dbName}`, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
