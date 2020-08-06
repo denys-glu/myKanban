@@ -1,14 +1,18 @@
 import React from 'react';
 import './App.css';
 import { Router } from '@reach/router';
+
 import Context from './components/utilities/MainContext';
 import Dashboard from './components/dashboard/Dashboard';
-import TicketForm from './components/dashboard/TicketForm';
+import TicketForm from './components/dashboard/ticket/TicketForm';
+import TicketsDashboard from './components/dashboard/ticket/TicketsDashboard';
+import ProjectForm from './components/dashboard/project/ProjectForm';
 import Changelog from './components/utilities/Changelog';
 
 function App() {
     const settings = {
-        API_URL: process.env.REACT_APP_API_LINK,
+        PROJECT_API: process.env.REACT_APP_PROJECTS_API_LINK,
+        TICKET_API: process.env.REACT_APP_TICKETS_API_LINK,
         statuses: {
             0: {
                 name: "Backlog",
@@ -37,8 +41,11 @@ function App() {
             <Context.Provider value={settings}>
                 <Router>
                     <Dashboard path="/" />
+                    <TicketsDashboard path="tickets/:name" />
                     <TicketForm path="tickets/new" action="create" />
-                    <TicketForm path="tickets/:id/edit" action="edit" />
+                    <TicketForm path="tickets/:projectId/:id/edit" action="edit" />
+                    <ProjectForm path="projects/new" action="create" />
+                    <ProjectForm path="projects/:id/edit" action="edit" />
                     <Changelog path="changelog" />
                 </Router>
             </Context.Provider>
