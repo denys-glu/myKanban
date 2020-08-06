@@ -2,22 +2,21 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 
-import Context from '../utilities/MainContext';
+import Context from '../../utilities/MainContext';
 
 function TicketForm(props) {
     const { action } = props;
-    const API_URL = useContext(Context).API_URL;
-
+    const TICKET_API = useContext(Context).TICKET_API;
+    const projects = useContext(Context).projects;
+    console.log(projects)
     const [ticket, setTicket] = useState({
         name: "",
-        style: "",
         dueDate: "",
         description: ""
     });
     // TODO: add dynamic validation
     const [errors, setErrors] = useState({
         name: "",
-        style: "",
         dueDate: "",
         description: ""
     });
@@ -25,7 +24,7 @@ function TicketForm(props) {
     useEffect(() => {
         if (action === "edit") {
             // console.log(props)
-            axios.get(`${API_URL}/${props.id}`)
+            axios.get(`${TICKET_API}/${props.id}`)
                 .then(response => {
                     if (response.data.message === "Success") {
                         setTicket(response.data.results)
@@ -38,7 +37,7 @@ function TicketForm(props) {
     //TODO: there is another delete ticjketc function inside Dashboard, find way how to remove one of them
     function deleteTicket() {
         console.log(ticket)
-        axios.delete(`${API_URL}/delete/${ticket._id}`, { id: ticket._id })
+        axios.delete(`${TICKET_API}/delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
                 console.log("Successfuly deleted a ticket: ", res)
                 navigate("/")
@@ -98,7 +97,7 @@ function TicketForm(props) {
         if (validate(ticket)) {
             if (action === "edit") {
                 console.log(ticket)
-                axios.patch(`${API_URL}/update/${ticket._id}`, ticket)
+                axios.patch(`${TICKET_API}/update/${ticket._id}`, ticket)
                     .then(res => {
                         if (res.data.message === "Success") {
                             setTicket(res.data.results)
@@ -107,7 +106,7 @@ function TicketForm(props) {
                         }
                     })
             } else {
-                axios.post(`${API_URL}/new`, ticket)
+                axios.post(`${TICKET_API}/new`, ticket)
                     .then(res => {
                         navigate("/");
                     })
@@ -147,14 +146,26 @@ function TicketForm(props) {
                                 <textarea type="date" className="form-control fs32" value={ticket.description} name="description" onChange={changeHandler}> </textarea>
                             </div>
                             <div className="form-group">
+                                {errors.dueDate && <p className="text-danger" >{errors.project}</p>}
+                                <label htmlFor="" className="form-heading fs40">Project: </label>
+                                <select name="" className="form-control fs32">
+                                    {
+                                        projects.map((project, idx) => (
+                                            <option value={project._id}>{project.name}</option>
+                                        ))
+                                    }
+                                </select>
+
+                            </div>
+                            <div className="form-group">
                                 {errors.dueDate && <p className="text-danger" >{errors.dueDate}</p>}
                                 <label htmlFor="" className="form-heading fs40">Due Date: </label>
                                 <input type="date" className="form-control fs32" value={ticket.dueDate.substring(0, 10)} name="dueDate" onChange={changeHandler} />
                             </div>
                             {
-                                action === "edit" ? 
-                                    <><a className="btn fs32 btn-danger mr-5 w200" href="#" onClick={ () => deleteTicket() }>Delete ticket</a> 
-                                    <button className="btn fs32 btn-success w200" type="submit">Update</button></>:
+                                action === "edit" ?
+                                    <><a className="btn fs32 btn-danger mr-5 w200" href="#" onClick={() => deleteTicket()}>Delete ticket</a>
+                                        <button className="btn fs32 btn-success w200" type="submit">Update</button></> :
                                     <button className="btn fs32 btn-success w200" type="submit">Submit</button>
                             }
                         </form>

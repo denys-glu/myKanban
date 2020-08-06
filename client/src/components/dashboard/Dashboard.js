@@ -1,84 +1,54 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Link } from '@reach/router';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from 'react'
+import { Link, navigate } from '@reach/router';
 
 import Context from '../utilities/MainContext';
-import DnDWrapper from './DnDWrapper';
+import TicketDashboard from './ticket/TicketsDashboard'
+import axios from 'axios';
 
-function Dashboard() {
-    const [tickets, setTickets] = useState([])
-    const [loaded, setLoaded] = useState(false)
-
-    const API_URL = useContext(Context).API_URL;
+const Dashboard = () => {
+    const [projects, setProjects] = useState();
+    const [loaded, setLoaded] = useState(false);
+    const [selectedProject, setSelectedProject] = useState("");
+    const PROJECT_API = useContext(Context).PROJECT_API;
+    useContext(Context).projects = projects;
 
     useEffect(() => {
-        getTickets();
-    }, [])
-
-    function getTickets() {
-        axios.get(API_URL)
+        axios.get(`${PROJECT_API}`)
             .then(res => {
-                if(res.data.message === "Success") {
-                    // console.log("getTickets -> res.data", res.data.results)
-                    setTickets(res.data.results)
+                if (res.data.message === "Success") {
+                    console.log(res.data.results)
+                    setProjects(res.data.results)
                     setLoaded(true)
                 }
             })
-            .catch(err => console.warn(err))
+    }, [])
+
+    const goToProject = () => {
+        
+        navigate(`tickets/${selectedProject}`)
     }
-
-    //TODO: there is another delete ticket function inside TicketForm, find way how to remove one of them
-    function deleteTicket(ticket) {
-        axios.delete(`${API_URL}/delete/${ticket._id}`, { id: ticket._id })
-            .then(res => {
-                console.log("Successfuly deleted a ticket: ", res)
-                getTickets();
-            })
-            .catch(err => console.log("Error while deleting: ", err))
-    }
-
-    function ticketStatusHandler(ticket, newStatus) {
-        console.log("ticketStatusHandler -> ticket, newStatus", ticket, newStatus)
-        // TODO: Fix change status, new statuses structure?
-        if (ticket.status === "777" && newStatus === undefined) {
-            console.log("delete")
-            deleteTicket(ticket);
-            return;
-        } else if (ticket.status !== "777" && newStatus === undefined) {
-            console.log("else if")
-
-        } else {
-            console.log("else")
-            ticket.status = newStatus;
-            axios.patch(`${API_URL}/update/${ticket._id}`, ticket)
-                .then(res => {
-                    console.log("ticket successfully updated: ", res)
-                    getTickets();
-                })
-                .catch(err => console.log("Error happend while updatin ticket: ", err))
-        }
-
-    }
-    
     return (
         <>
             <div className="container mt-5">
-
-                <div className="row">
-                    {loaded ?
-                        <DnDWrapper tickets={tickets} 
-                            setTickets={setTickets} 
-                            ticketStatusHandler={ticketStatusHandler} />:
-                    <p>Loading...</p>
-                    }
+                <div className="row justify-content-center">
+                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <h3>Choose a project to work with:</h3>
+                        <select name="project" className="form-control" onChange={e => setSelectedProject(e.target.value)}>
+                            <option value="">----</option>
+                            {
+                                loaded && projects.map((project, idx) => (
+                                    <option key={idx} value={project._id}> {project.name}</option>
+                                ))
+                            }
+                        </select>
+                        <button className="btn btn-success btn-block mt-3" onClick={ goToProject }>
+                            Select
+                        </button>
+                    </div>
                 </div>
-                <div className="row">
-                    <div className="col text-left p-3">
-                        <Link className="btn fs32 btn-success" to="tickets/new">
-                            <div className="plus radius mr-2"></div>
-                            Add New Ticket
-                        </Link>
-                        <Link className="btn fs32 btn-warning ml-5" to="changelog"><strong>Changelog</strong></Link>
+                <div className="row justify-content-center mt-5">
+                    <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <Link className="btn fs32 btn-primary p-3" to="projects/new">Add new project</Link>
                     </div>
                 </div>
             </div>
@@ -86,4 +56,4 @@ function Dashboard() {
     )
 }
 
-export default Dashboard;
+export default Dashboard

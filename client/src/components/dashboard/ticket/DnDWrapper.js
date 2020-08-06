@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Link } from '@reach/router';
 
-import Context from '../utilities/MainContext';
+import Context from '../../utilities/MainContext';
 import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
@@ -149,7 +149,7 @@ function DnDWrapper({ tickets, setTickets, ticketStatusHandler, deleteHandler })
                                                                     provided.draggableProps.style
                                                                 )}
                                                             >
-                                                                <Link to={"tickets/" + ticket._id + "/edit"} 
+                                                                <Link to={ticket._id + "/edit"} 
                                                                         state={{deleteHandler}}
                                                                         className="remove-link-styles">
                                                                     <Ticket ticket={ticket} 
