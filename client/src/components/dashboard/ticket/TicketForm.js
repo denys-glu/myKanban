@@ -106,20 +106,29 @@ function TicketForm(props) {
                         }
                     })
             } else {
-                axios.post(`${TICKET_API}/new`, ticket)
+                axios.post(`${PROJECT_API}/add/ticket/${currProjectId}`, ticket)
                     .then(res => {
-                        navigate("/");
+                        if (res.data.message === "Success") {
+                            // setTicket(res.data.results)
+                            navigate(-1, {id: currProjectId})
+                        } else if(res.data.message === "Error"){
+                            console.log("error happend when adding new ticket")
+                            if (res.data.error.name === "MongoError") {
+                                setErrors({ ...errors, name: `Ticket name must be unique, "${res.data.error.keyValue.name}" has already been taken!` });
+                            } else {
+                                const errorResponse = res.data.error.errors; // Get the errors from err.response.data
+                                for (const key of Object.keys(errorResponse)) { // Loop through all errors and get the messages
+                                    setErrors({ ...errors, [key]: errorResponse[key].message })
+                                }
+                            }
+                        } else {
+                            console.log("heading out")
+                            navigate("../", {id: currProjectId})
+                        }
                     })
                     .catch(err => {
                         console.log("Error happend :(", err);
-                        if (err.response.data.error.name === "MongoError") {
-                            setErrors({ ...errors, name: `Ticket name must be unique, "${err.response.data.error.keyValue.name}" has already been taken!` });
-                        } else {
-                            const errorResponse = err.response.data.error.errors; // Get the errors from err.response.data
-                            for (const key of Object.keys(errorResponse)) { // Loop through all errors and get the messages
-                                setErrors({ ...errors, [key]: errorResponse[key].message })
-                            }
-                        }
+
                     })
             }
         }
