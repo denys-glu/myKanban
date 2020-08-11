@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Link } from '@reach/router';
 
-import Context from '../../utilities/MainContext';
+import Storage from '../../utilities/Storage';
 import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
-function DnDWrapper({ tickets, setTickets, ticketStatusHandler, deleteHandler }) {
+function DnDWrapper({ tickets, ticketStatusHandler, deleteHandler }) {
 
     const [groupedBy, setGroupedBy] = useState({});
 
-    const statuses = useContext(Context).statuses;
+    const statuses = Storage.get("settings")["statuses"]
 
     function saveAndGroupTickets() {
         // checking if we have all statuses

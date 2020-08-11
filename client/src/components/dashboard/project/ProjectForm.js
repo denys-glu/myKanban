@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 
-import Context from '../../utilities/MainContext';
+import Storage from '../../utilities/Storage';
 
 function ProjectForm(props) {
     const { action } = props;
-    const PROJECT_API = useContext(Context).PROJECT_API;
+    const PROJECT_API =  Storage.get("settings")["PROJECT_API"];
 
     const [project, setProject] = useState({
         name: "",
@@ -128,7 +128,7 @@ function ProjectForm(props) {
             <div className="container mt-3">
                 <div className="row">
                     <div className="col text-right">
-                        <Link to="/" className="fs36 text-dark">Back To Dashboard</Link>
+                        <Link to="/" className="fs36 text-dark"><i className="far fa-arrow-alt-circle-left"></i>Back To Projects Dashboard</Link>
                     </div>
                 </div>
                 <div className="row d-flex transparent-background justify-content-center pb-5">

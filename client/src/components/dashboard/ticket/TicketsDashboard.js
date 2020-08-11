@@ -1,26 +1,26 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from '@reach/router';
 import axios from 'axios';
 
-import Context from '../../utilities/MainContext';
+import Storage from '../../utilities/Storage';
 import DnDWrapper from './DnDWrapper';
 
 function TicketsDashboard(props) {
     const [tickets, setTickets] = useState([])
     const [loaded, setLoaded] = useState(false)
 
-    const TICKET_API = useContext(Context).TICKET_API;
-    const PROJECT_API = useContext(Context).PROJECT_API;
+    const TICKET_API = Storage.get("settings")["TICKET_API"];
+    const PROJECT_API =  Storage.get("settings")["PROJECT_API"];
+    const currProjectId =  Storage.get("currentSession")["id"];
 
     useEffect(() => {
         getTickets();
     }, [])
 
     function getTickets() {
-        axios.get(`${PROJECT_API}/${props.name}`)
+        axios.get(`${PROJECT_API}/${currProjectId}`)
             .then(res => {
                 if(res.data.message === "Success") {
-                    // console.log("getTickets -> res.data", res.data.results)
                     setTickets(res.data.results.tickets)
                     setLoaded(true)
                 }
@@ -64,23 +64,28 @@ function TicketsDashboard(props) {
     return (
         <>
             <div className="container mt-5">
-
                 <div className="row">
+                    <div className="col">
+                        <Link className="btn btn-block fs32 btn-success" to="new">
+                            <div className="plus radius mr-3 mb-2"></div>
+                            Add New Ticket
+                        </Link>
+                    </div>
+                    <div className="col">
+                        <Link className="btn btn-block fs32 btn-warning" to="/"><strong>Select another Project</strong></Link>
+                    </div>
+                    <div className="col">
+                        <Link className="btn btn-block fs32 btn-warning" to="/changelog"><strong>Changelog</strong></Link>
+                    </div>
+                </div>
+
+                <div className="row mt-4">
                     {loaded ?
                         <DnDWrapper tickets={tickets} 
                             setTickets={setTickets} 
                             ticketStatusHandler={ticketStatusHandler} />:
                     <p>Loading...</p>
                     }
-                </div>
-                <div className="row">
-                    <div className="col text-left p-3">
-                        <Link className="btn fs32 btn-success" to="tickets/new">
-                            <div className="plus radius mr-2"></div>
-                            Add New Ticket
-                        </Link>
-                        <Link className="btn fs32 btn-warning ml-5" to="changelog"><strong>Changelog</strong></Link>
-                    </div>
                 </div>
             </div>
         </>

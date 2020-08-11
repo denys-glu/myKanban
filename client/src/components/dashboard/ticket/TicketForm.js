@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 
-import Context from '../../utilities/MainContext';
+import Storage from '../../utilities/Storage';
 
 function TicketForm(props) {
     const { action } = props;
-    const TICKET_API = useContext(Context).TICKET_API;
-    const projects = useContext(Context).projects;
-    console.log(projects)
+    const TICKET_API = Storage.get("settings")["TICKET_API"];
+    const PROJECT_API =  Storage.get("settings")["PROJECT_API"];
+    const currProjectId =  Storage.get("currentSession")["id"];
+
     const [ticket, setTicket] = useState({
         name: "",
         dueDate: "",
@@ -25,11 +26,14 @@ function TicketForm(props) {
         if (action === "edit") {
             // console.log(props)
             axios.get(`${TICKET_API}/${props.id}`)
-                .then(response => {
-                    if (response.data.message === "Success") {
-                        setTicket(response.data.results)
+                .then(res => {
+                    if (res.data.message === "Success") {
+                        setTicket(res.data.results)
+                    } else if(res.data.message === "Error"){
+                        console.log("error happend when editing ticket")
                     } else {
-                        navigate("/")
+                        console.log("heading out")
+                        navigate("..", {id: currProjectId})
                     }
                 })
         }
@@ -40,7 +44,7 @@ function TicketForm(props) {
         axios.delete(`${TICKET_API}/delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
                 console.log("Successfuly deleted a ticket: ", res)
-                navigate("/")
+                navigate("..", {id: currProjectId})
             })
             .catch(err => console.log("Error while deleting: ", err))
     }
@@ -138,7 +142,11 @@ function TicketForm(props) {
             <div className="container mt-3">
                 <div className="row">
                     <div className="col text-right">
-                        <Link to="/" className="fs36 text-dark">Back To Dashboard</Link>
+                        { 
+                        action === "edit" ?
+                            <Link to={`../..`} className="fs36 text-dark"><i className="far fa-arrow-alt-circle-left"></i>Back To Dashboard</Link>:
+                            <Link to={`..`} className="fs36 text-dark"><i className="far fa-arrow-alt-circle-left"></i>Back To Dashboard</Link>
+                        }
                     </div>
                 </div>
                 <div className="row d-flex transparent-background justify-content-center pb-5">
@@ -153,18 +161,6 @@ function TicketForm(props) {
                                 {errors.description && <p className="text-danger" >{errors.description}</p>}
                                 <label htmlFor="" className="form-heading fs40">Description: </label>
                                 <textarea type="date" className="form-control fs32" value={ticket.description} name="description" onChange={changeHandler}> </textarea>
-                            </div>
-                            <div className="form-group">
-                                {errors.dueDate && <p className="text-danger" >{errors.project}</p>}
-                                <label htmlFor="" className="form-heading fs40">Project: </label>
-                                <select name="" className="form-control fs32">
-                                    {
-                                        projects.map((project, idx) => (
-                                            <option value={project._id}>{project.name}</option>
-                                        ))
-                                    }
-                                </select>
-
                             </div>
                             <div className="form-group">
                                 {errors.dueDate && <p className="text-danger" >{errors.dueDate}</p>}

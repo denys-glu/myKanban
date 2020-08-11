@@ -2,33 +2,38 @@ import React from 'react';
 import './App.css';
 import { Router } from '@reach/router';
 
-import Context from './components/utilities/MainContext';
+// Components
 import Dashboard from './components/dashboard/Dashboard';
 import TicketForm from './components/dashboard/ticket/TicketForm';
 import TicketsDashboard from './components/dashboard/ticket/TicketsDashboard';
 import ProjectForm from './components/dashboard/project/ProjectForm';
+
+// Utilities
 import Changelog from './components/utilities/Changelog';
 import NotFound from './components/utilities/NotFound';
+import Storage from './components/utilities/Storage';
+
 
 function App() {
     const settings = {
-        PROJECT_API: process.env.REACT_APP_PROJECTS_API_LINK,
-        TICKET_API: process.env.REACT_APP_TICKETS_API_LINK,
-        statuses: {
-            0: {
-                name: "Backlog",
-                alias: "backlog"
+        "PROJECT_API": process.env.REACT_APP_PROJECTS_API_LINK,
+        "TICKET_API": process.env.REACT_APP_TICKETS_API_LINK,
+        "statuses": {
+            "0": {
+                "name": "Backlog",
+                "alias": "backlog"
             },
-            1: {
-                name: "In Progress",
-                alias: "in-progress"
+            "1": {
+                "name": "In Progress",
+                "alias": "in-progress"
             },
-            777: {
-                name: "Completed",
-                alias: "completed"
+            "777": {
+                "name": "Completed",
+                "alias": "completed"
             }
         }
     }
+    Storage.save("settings", settings);
     return (
         <div className="App">
 
