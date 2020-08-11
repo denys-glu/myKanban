@@ -5,6 +5,7 @@ body {
 .App {
   text-align: center;
   font-family: 'Indie Flower', cursive;
+  font-weight: bold;
 }
 
 .App-logo {
@@ -136,6 +137,13 @@ body {
   width: 200px
 }
 
+select.form-control {
+  font-size: 2rem;
+  line-height: 3.5;
+}
+select.form-control:not([size]):not([multiple]) {
+  height: calc(4.25rem + 2px);
+}
 /* Scroll bar */
 
 .projects::-webkit-scrollbar {
