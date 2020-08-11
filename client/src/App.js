@@ -8,6 +8,7 @@ import TicketForm from './components/dashboard/ticket/TicketForm';
 import TicketsDashboard from './components/dashboard/ticket/TicketsDashboard';
 import ProjectForm from './components/dashboard/project/ProjectForm';
 import Changelog from './components/utilities/Changelog';
+import NotFound from './components/utilities/NotFound';
 
 function App() {
     const settings = {
@@ -38,17 +39,18 @@ function App() {
                     </div>
                 </div>
             </div>
-            <Context.Provider value={settings}>
-                <Router>
-                    <Dashboard path="/" />
-                    <TicketsDashboard path="tickets/:name" />
-                    <TicketForm path="tickets/new" action="create" />
-                    <TicketForm path="tickets/:projectId/:id/edit" action="edit" />
-                    <ProjectForm path="projects/new" action="create" />
-                    <ProjectForm path="projects/:id/edit" action="edit" />
-                    <Changelog path="changelog" />
-                </Router>
-            </Context.Provider>
+
+            <Router>
+                <Dashboard path="/" />
+                <TicketsDashboard path="project/:name/tickets" />
+                <TicketForm path="project/:name/tickets/new" action="create" />
+                <TicketForm path="project/:name/tickets/:id/edit" action="edit" />
+                <ProjectForm path="projects/new" action="create" />
+                <ProjectForm path="projects/:id/edit" action="edit" />
+                <Changelog path="changelog" />
+                <NotFound default />
+            </Router>
+
         </div>
     );
 }
