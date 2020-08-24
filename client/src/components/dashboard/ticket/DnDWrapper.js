@@ -7,7 +7,7 @@ import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
 function DnDWrapper({ tickets, ticketStatusHandler, deleteHandler }) {
-    const { path, url } = useRouteMatch();
+    const { url } = useRouteMatch();
     const [groupedBy, setGroupedBy] = useState({});
 
     const statuses = Storage.get("settings")["statuses"]
@@ -50,23 +50,23 @@ function DnDWrapper({ tickets, ticketStatusHandler, deleteHandler }) {
     });
 
     // Reorder items in the same category
-    const reorder = (list, startIndex, endIndex) => {
-        console.log("reorder -> list, startIndex, endIndex", list, startIndex, endIndex)
-        const result = [...list];
-        const [removed] = result.splice(startIndex, 1);
-        console.log("reorder -> removed", removed.name)
+    // const reorder = (list, startIndex, endIndex) => {
+    //     console.log("reorder -> list, startIndex, endIndex", list, startIndex, endIndex)
+    //     const result = [...list];
+    //     const [removed] = result.splice(startIndex, 1);
+    //     console.log("reorder -> removed", removed.name)
 
-        console.log("reorder -> result[endIndex]", result[endIndex].name)
-        let tempPriority = removed.priority;
-        removed.priority = result[endIndex].priority;
-        result[endIndex].priority = tempPriority + 1;
-        // removed.priority = endIndex+1;
-        // result[endIndex].priority = startIndex+1;
+    //     console.log("reorder -> result[endIndex]", result[endIndex].name)
+    //     let tempPriority = removed.priority;
+    //     removed.priority = result[endIndex].priority;
+    //     result[endIndex].priority = tempPriority + 1;
+    //     // removed.priority = endIndex+1;
+    //     // result[endIndex].priority = startIndex+1;
 
-        result.splice(endIndex, 0, removed);
+    //     result.splice(endIndex, 0, removed);
 
-        return result;
-    };
+    //     return result;
+    // };
 
     /**
      * Moves an item from one category to another category.
