@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 import Storage from '../../utilities/Storage';
 
-function TicketForm(props) {
-    // console.log(props)
+function TicketForm() {
+
     const history = useHistory();
     const location = useLocation();
     
@@ -178,7 +178,7 @@ function TicketForm(props) {
                             </div>
                             {
                                 action === "edit" ?
-                                    <><a className="btn fs32 btn-danger mr-5 w200" href="#" onClick={() => deleteTicket()}>Delete ticket</a>
+                                    <><button className="btn fs32 btn-danger mr-5 w200" onClick={() => deleteTicket()}>Delete ticket</button>
                                         <button className="btn fs32 btn-success w200" type="submit">Update</button></> :
                                     <button className="btn fs32 btn-success w200" type="submit">Submit</button>
                             }

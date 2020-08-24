@@ -151,7 +151,7 @@ function ProjectForm(props) {
                             </div>
                             {
                                 action === "edit" ? 
-                                    <><a className="btn fs32 btn-danger mr-5 w200" href="#" onClick={ () => deleteTicket() }>Delete project</a> 
+                                    <><button className="btn fs32 btn-danger mr-5 w200" onClick={ () => deleteTicket() }>Delete project</button> 
                                     <button className="btn fs32 btn-success w200" type="submit">Update</button></>:
                                     <button className="btn fs32 btn-success w200" type="submit">Submit</button>
                             }
