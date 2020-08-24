@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 import style from './NotFound.css';
 function NotFound() {
     return (
@@ -11,7 +11,7 @@ function NotFound() {
             </div>
             <div className="row">
                 <div className="col">
-                    <div class="text">404</div>
+                    <div className="text">404</div>
                 </div>
             </div>
         </div>

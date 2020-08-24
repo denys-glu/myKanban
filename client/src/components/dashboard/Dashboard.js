@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { Link, navigate } from '@reach/router';
+import React, { useState, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom';
 
 import Storage from '../utilities/Storage';
 
 import axios from 'axios';
 
 const Dashboard = (props) => {
+    const history = useHistory();
     const [projects, setProjects] = useState();
     const [loaded, setLoaded] = useState(false);
     const [selectedProject, setSelectedProject] = useState({});
@@ -27,11 +28,11 @@ const Dashboard = (props) => {
     }, [])
 
     const goToProject = () => {
-        console.log(selectedProject)
+        // console.log(selectedProject)
         if(selectedProject.name) {
             const {name, _id: id} = selectedProject
             Storage.save("currentSession", {name, id})
-            navigate(`project/${selectedProject.name}/tickets`, { state: {id:selectedProject._id }})
+            history.push(`project/${selectedProject.name}/tickets`, { state: {id:selectedProject._id }})
         } else {
             console.log("select an existing project")
             setProjectError({...projectError, status: true})

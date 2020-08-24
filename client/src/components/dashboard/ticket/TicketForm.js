@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Link, navigate } from '@reach/router';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 import Storage from '../../utilities/Storage';
 
 function TicketForm(props) {
-    const { action } = props;
+    // console.log(props)
+    const history = useHistory();
+    const location = useLocation();
+    
     const TICKET_API = Storage.get("settings")["TICKET_API"];
     const PROJECT_API =  Storage.get("settings")["PROJECT_API"];
     const currProjectId =  Storage.get("currentSession")["id"];
+    let action;
+
+    if (location.state) {
+        action = location.state.action;
+    } else {
+        action = "create";
+    }
 
     const [ticket, setTicket] = useState({
         name: "",
@@ -24,8 +34,7 @@ function TicketForm(props) {
 
     useEffect(() => {
         if (action === "edit") {
-            // console.log(props)
-            axios.get(`${TICKET_API}/${props.id}`)
+            axios.get(`${TICKET_API}/${location.state.id}`)
                 .then(res => {
                     if (res.data.message === "Success") {
                         setTicket(res.data.results)
@@ -33,7 +42,7 @@ function TicketForm(props) {
                         console.log("error happend when editing ticket")
                     } else {
                         console.log("heading out")
-                        navigate("..", {id: currProjectId})
+                        history.push("..", {id: currProjectId})
                     }
                 })
         }
@@ -44,7 +53,7 @@ function TicketForm(props) {
         axios.delete(`${TICKET_API}/delete/${ticket._id}`, { id: ticket._id })
             .then(res => {
                 console.log("Successfuly deleted a ticket: ", res)
-                navigate("..", {id: currProjectId})
+                history.push("..", {id: currProjectId})
             })
             .catch(err => console.log("Error while deleting: ", err))
     }
@@ -59,7 +68,7 @@ function TicketForm(props) {
     }
 
     const validate = newTicket => {
-        console.log(newTicket)
+        // console.log(newTicket)
         let valid = false;
         const { ...curErrors } = errors;
         if (newTicket.name.length === 0) {
@@ -106,7 +115,7 @@ function TicketForm(props) {
                         if (res.data.message === "Success") {
                             setTicket(res.data.results)
                         } else {
-                            navigate("/")
+                            history.push("/")
                         }
                     })
             } else {
@@ -114,7 +123,7 @@ function TicketForm(props) {
                     .then(res => {
                         if (res.data.message === "Success") {
                             // setTicket(res.data.results)
-                            navigate(-1, {id: currProjectId})
+                            history.push(-1, {id: currProjectId})
                         } else if(res.data.message === "Error"){
                             console.log("error happend when adding new ticket")
                             if (res.data.error.name === "MongoError") {
@@ -127,7 +136,7 @@ function TicketForm(props) {
                             }
                         } else {
                             console.log("heading out")
-                            navigate("../", {id: currProjectId})
+                            history.push("../", {id: currProjectId})
                         }
                     })
                     .catch(err => {
@@ -137,16 +146,16 @@ function TicketForm(props) {
             }
         }
     }
+
+    const goBack = () => {
+        history.goBack();
+    }
     return (
         <>
             <div className="container mt-3">
                 <div className="row">
                     <div className="col text-right">
-                        { 
-                        action === "edit" ?
-                            <Link to={`../..`} className="fs36 text-dark"><i className="far fa-arrow-alt-circle-left"></i>Back To Dashboard</Link>:
-                            <Link to={`..`} className="fs36 text-dark"><i className="far fa-arrow-alt-circle-left"></i>Back To Dashboard</Link>
-                        }
+                        <span onClick={ goBack } className="fs36 text-dark fakeLink"><i className="far fa-arrow-alt-circle-left"></i>Back To Dashboard</span>:
                     </div>
                 </div>
                 <div className="row d-flex transparent-background justify-content-center pb-5">

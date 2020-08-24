@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { Link } from '@reach/router';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import Storage from '../../utilities/Storage';
 import LgroupBy from 'lodash/groupBy';
 import Ticket from './Ticket';
 
 function DnDWrapper({ tickets, ticketStatusHandler, deleteHandler }) {
-
+    const { path, url } = useRouteMatch();
     const [groupedBy, setGroupedBy] = useState({});
 
     const statuses = Storage.get("settings")["statuses"]
@@ -149,8 +149,13 @@ function DnDWrapper({ tickets, ticketStatusHandler, deleteHandler }) {
                                                                     provided.draggableProps.style
                                                                 )}
                                                             >
-                                                                <Link to={ticket._id + "/edit"} 
-                                                                        state={{deleteHandler}}
+                                                                <Link to={{
+                                                                        pathname: `${url}/${ticket._id}/edit`,
+                                                                        state: { id: ticket._id,
+                                                                                action: "edit",
+                                                                                deleteHandler: deleteHandler
+                                                                            }
+                                                                        }} 
                                                                         className="remove-link-styles">
                                                                     <Ticket ticket={ticket} 
                                                                             callback={ticketStatusHandler} 

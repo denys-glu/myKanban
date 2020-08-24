@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from '@reach/router';
+import { Link, useRouteMatch } from 'react-router-dom';
 import axios from 'axios';
 
 import Storage from '../../utilities/Storage';
 import DnDWrapper from './DnDWrapper';
 
 function TicketsDashboard(props) {
+    const { path, url } = useRouteMatch();
     const [tickets, setTickets] = useState([])
     const [loaded, setLoaded] = useState(false)
 
     const TICKET_API = Storage.get("settings")["TICKET_API"];
     const PROJECT_API =  Storage.get("settings")["PROJECT_API"];
     const currProjectId =  Storage.get("currentSession")["id"];
+    const currProjectName =  Storage.get("currentSession")["name"];
 
     useEffect(() => {
         getTickets();
@@ -66,7 +68,7 @@ function TicketsDashboard(props) {
             <div className="container mt-5">
                 <div className="row">
                     <div className="col">
-                        <Link className="btn btn-block fs32 btn-success" to="new">
+                        <Link to={`/project/${currProjectName}/tickets/new`} className="btn btn-block fs32 btn-success">
                             <div className="plus radius mr-3 mb-2"></div>
                             Add New Ticket
                         </Link>

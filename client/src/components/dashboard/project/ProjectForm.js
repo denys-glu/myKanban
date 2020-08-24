@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, navigate } from '@reach/router';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import Storage from '../../utilities/Storage';
@@ -28,7 +28,7 @@ function ProjectForm(props) {
                     if (response.data.message === "Success") {
                         setProject(response.data.results)
                     } else {
-                        navigate("/")
+                        useHistory.push("/")
                     }
                 })
         }
@@ -39,7 +39,7 @@ function ProjectForm(props) {
         axios.delete(`${PROJECT_API}/delete/${project._id}`, { id: project._id })
             .then(res => {
                 console.log("Successfuly deleted a project: ", res)
-                navigate("/")
+                useHistory.push("/")
             })
             .catch(err => console.log("Error while deleting: ", err))
     }
@@ -101,13 +101,13 @@ function ProjectForm(props) {
                         if (res.data.message === "Success") {
                             setProject(res.data.results)
                         } else {
-                            navigate("/")
+                            useHistory.push("/")
                         }
                     })
             } else {
                 axios.post(`${PROJECT_API}/new`, project)
                     .then(res => {
-                        navigate("/");
+                        useHistory.push("/");
                     })
                     .catch(err => {
                         console.log("Error happend :(", err);
