@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import Storage from '../../utilities/Storage';
 import DnDWrapper from './DnDWrapper';
 
 function TicketsDashboard(props) {
-    const { path, url } = useRouteMatch();
     const [tickets, setTickets] = useState([])
     const [loaded, setLoaded] = useState(false)
 

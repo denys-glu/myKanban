@@ -3,8 +3,7 @@ import './App.css';
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Link
+    Route
 } from 'react-router-dom';
 
 // Components
@@ -70,9 +69,9 @@ function App() {
                     <Route path="/projects/:id/edit" 
                         component={() => <ProjectForm action="edit" /> } />
 
-                    <Route path="/changelog" component={ <Changelog /> } />
+                    <Route path="/changelog" component={ Changelog } />
 
-                    <Route path="*" component={ <NotFound /> } />
+                    <Route path="*" component={ NotFound } />
 
                 </Switch>
 
