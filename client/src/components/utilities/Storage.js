@@ -6,10 +6,6 @@ const Storage = {
     },
     get: key => {
         return JSON.parse(_s.getItem(key))
-    },
-    update: (key, data) => {
-        let temp = this.get(key)
-
     }
 }
 
