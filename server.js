@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const port = 8000;
+const port = 5000;
 
 // This will fire our mongoose.connect statement to initialize our database connection
 require("./config/mongoose.config");
