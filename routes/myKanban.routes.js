@@ -8,7 +8,7 @@ module.exports = app => {
     app.post("/api/tickets/new", TicketController.createNewTicket);
 
     app.patch("/api/tickets/update/:id", TicketController.updateExistingTicketStatus);
-    
+
     app.delete("/api/tickets/delete/:id", TicketController.deleteAnExistingTicket);
 
     app.get("/api/projects/", ProjectController.getAllProjects)
@@ -18,5 +18,3 @@ module.exports = app => {
 
     app.post("/api/projects/add/ticket/:id", ProjectController.addTicketToProject)
 };
-
-//5f29a830672cf417a84f1089
