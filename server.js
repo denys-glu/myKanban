@@ -15,4 +15,4 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/client/build/index.html'))
 });
-const server = app.listen(port, () => console.log(`The server is all fired up on port ${port}`));
+// const server = app.listen(port, () => console.log(`The server is all fired up on port ${port}`));
